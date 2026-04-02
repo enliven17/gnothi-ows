@@ -1,0 +1,3 @@
+.exit
+await ethers.provider.getBalance(signer.address).then(b => ethers.formatEther(b));
+const [signer] = await ethers.getSigners();

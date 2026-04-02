@@ -1,0 +1,40 @@
+# Build artifacts - Very important!
+.next/
+.next-build/
+out/
+build/
+dist/
+
+# Dependencies - Vercel installs these on server
+node_modules/
+
+# Environment files
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Other project folders (exclude if not part of frontend deploy)
+/bridge
+/contracts
+/supabase
+/pre
+/.git
+/.claude
+/.github
+/.vscode
+/.idea
+
+# Misc
+*.tsbuildinfo
+artifacts/
+cache/
+deployments/
+typechain-types/
+typechain/
+coverage/
+temp/
+tmp/

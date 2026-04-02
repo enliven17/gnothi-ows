@@ -1,0 +1,29 @@
+{
+  "root": "./docs",
+  "title": "Gnothi Documentation",
+  "description": "AI-Oracle Powered Prediction Markets on GenLayer",
+  "structure": {
+    "readme": "README.md"
+  },
+  "plugins": [
+    "search",
+    "lunr",
+    "highlight",
+    "fontsettings",
+    "theme-default"
+  ],
+  "pluginsConfig": {
+    "fontsettings": {
+      "theme": "white",
+      "family": "sans",
+      "size": 2
+    },
+    "highlight": {}
+  },
+  "links": {
+    "sidebar": {
+      "GitHub": "https://github.com/enliven17/gnothi",
+      "App": "https://app.gnothi.xyz"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.genlayer.com)",
+      "WebSearch",
+      "mcp__plugin_telegram_telegram__reply",
+      "Bash(npx hardhat:*)"
+    ]
+  }
+}

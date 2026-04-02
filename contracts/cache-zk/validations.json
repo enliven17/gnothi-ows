@@ -1,0 +1,1551 @@
+{
+  "version": "3.4",
+  "log": [
+    {
+      "@openzeppelin/contracts/access/Ownable.sol:Ownable": {
+        "src": "@openzeppelin\\contracts\\access\\Ownable.sol:20",
+        "inherit": [
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin\\contracts\\access\\Ownable.sol:38"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "Ownable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts\\access\\Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC1155Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:113",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC721Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:55",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:29",
+        "inherit": [
+          "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors",
+          "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata",
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "name()",
+          "symbol()",
+          "decimals()",
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "ERC20",
+            "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:44"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "ERC20",
+              "label": "_balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:30"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_allowances",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:32"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_totalSupply",
+              "type": "t_uint256",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:34"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_name",
+              "type": "t_string_storage",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:36"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_symbol",
+              "type": "t_string_storage",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:37"
+            }
+          ],
+          "types": {
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+              "label": "mapping(address => mapping(address => uint256))"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Metadata.sol:11",
+        "inherit": [
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20"
+        ],
+        "libraries": [],
+        "methods": [
+          "name()",
+          "symbol()",
+          "decimals()"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/utils/Context.sol:Context": {
+        "src": "@openzeppelin\\contracts\\utils\\Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/utils/ReentrancyGuard.sol:ReentrancyGuard": {
+        "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:25",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "ReentrancyGuard",
+            "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:47"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "ReentrancyGuard",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:40"
+            }
+          ],
+          "types": {
+            "t_uint256": {
+              "label": "uint256"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/BetCOFI.sol:BetCOFI": {
+        "src": "contracts\\BetCOFI.sol:13",
+        "version": {
+          "withMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860",
+          "withoutMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860",
+          "linkedWithoutMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/utils/Context.sol:Context",
+          "@openzeppelin/contracts/utils/ReentrancyGuard.sol:ReentrancyGuard"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,string,string,string,string,uint256,address,address,uint8,bytes)",
+          "betOnSideAViaFactory(address,uint256,uint8)",
+          "betOnSideBViaFactory(address,uint256,uint8)",
+          "resolve()",
+          "setResolution(bytes)",
+          "claim()",
+          "cancelBet()",
+          "getInfo()",
+          "getUserBets(address)",
+          "getTradeCount()",
+          "calculatePotentialWinnings(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "BetCOFI",
+            "src": "contracts\\BetCOFI.sol:65"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "creator",
+            "src": "contracts\\BetCOFI.sol:25"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "creationDate",
+            "src": "contracts\\BetCOFI.sol:30"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "endDate",
+            "src": "contracts\\BetCOFI.sol:31"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "factory",
+            "src": "contracts\\BetCOFI.sol:32"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "token",
+            "src": "contracts\\BetCOFI.sol:33"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "resolutionType",
+            "src": "contracts\\BetCOFI.sol:34"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "BetCOFI",
+              "label": "title",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:26"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionCriteria",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:27"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "sideAName",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:28"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "sideBName",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:29"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionData",
+              "type": "t_bytes_storage",
+              "src": "contracts\\BetCOFI.sol:35"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "isResolved",
+              "type": "t_bool",
+              "src": "contracts\\BetCOFI.sol:39"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "isSideAWinner",
+              "type": "t_bool",
+              "src": "contracts\\BetCOFI.sol:40"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "status",
+              "type": "t_enum(BetStatus)1019",
+              "src": "contracts\\BetCOFI.sol:41"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionRequestedAt",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:42"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "totalSideA",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:44"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "totalSideB",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:45"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "betsOnSideA",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:46"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "betsOnSideB",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:47"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "hasClaimed",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetCOFI.sol:48"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "trades",
+              "type": "t_array(t_struct(TradeSnapshot)1033_storage)dyn_storage",
+              "src": "contracts\\BetCOFI.sol:51"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "scemPayout",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:52"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolvedPrice",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:55"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "winnerValue",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:56"
+            }
+          ],
+          "types": {
+            "t_string_storage": {
+              "label": "string"
+            },
+            "t_bytes_storage": {
+              "label": "bytes"
+            },
+            "t_bool": {
+              "label": "bool"
+            },
+            "t_enum(BetStatus)1019": {
+              "label": "enum BetCOFI.BetStatus",
+              "members": [
+                "ACTIVE",
+                "RESOLVING",
+                "RESOLVED",
+                "UNDETERMINED"
+              ]
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_array(t_struct(TradeSnapshot)1033_storage)dyn_storage": {
+              "label": "struct BetCOFI.TradeSnapshot[]"
+            },
+            "t_struct(TradeSnapshot)1033_storage": {
+              "label": "struct BetCOFI.TradeSnapshot",
+              "members": [
+                {
+                  "label": "trader",
+                  "type": "t_address"
+                },
+                {
+                  "label": "probability",
+                  "type": "t_uint8"
+                },
+                {
+                  "label": "bondAmount",
+                  "type": "t_uint256"
+                },
+                {
+                  "label": "onSideA",
+                  "type": "t_bool"
+                }
+              ]
+            },
+            "t_uint8": {
+              "label": "uint8"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/BetFactoryCOFI.sol:BetFactoryCOFI": {
+        "src": "contracts\\BetFactoryCOFI.sol:10",
+        "version": {
+          "withMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302",
+          "withoutMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302",
+          "linkedWithoutMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address)",
+          "setCreatorApproval(address,bool)",
+          "setResolverApproval(address,bool)",
+          "canCreateBet(address)",
+          "canResolveBet(address,address)",
+          "setBridgeReceiver(address)",
+          "processBridgeMessage(uint32,address,bytes)",
+          "forwardResolutionRequest(uint8)",
+          "notifyStatusChange(uint8,uint8)",
+          "createBet(string,string,string,string,uint256,uint8,bytes)",
+          "placeBet(address,bool,uint256,uint8)",
+          "createNewsBet(string,string,string,string,string,uint256)",
+          "getAllBets()",
+          "getBetCount()",
+          "isLegitBet(address)",
+          "getActiveBets()",
+          "getResolvingBets()",
+          "getResolvedBets()",
+          "getUndeterminedBets()",
+          "getBetsByStatus(uint8)",
+          "getActiveBetsCount()",
+          "getResolvingBetsCount()",
+          "getResolvedBetsCount()",
+          "getUndeterminedBetsCount()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "BetFactoryCOFI",
+            "src": "contracts\\BetFactoryCOFI.sol:43"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "usdcToken",
+            "src": "contracts\\BetFactoryCOFI.sol:11"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "bridgeReceiver",
+              "type": "t_address",
+              "src": "contracts\\BetFactoryCOFI.sol:12"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "allBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:13"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "deployedBets",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:14"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "approvedCreators",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:15"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "approvedResolvers",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:16"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "activeBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:19"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "resolvingBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:20"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "resolvedBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:21"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "undeterminedBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:22"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "betIndexInStatusArray",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetFactoryCOFI.sol:23"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address"
+            },
+            "t_array(t_address)dyn_storage": {
+              "label": "address[]"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_bool": {
+              "label": "bool"
+            },
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/SCEMScoring.sol:SCEMScoring": {
+        "src": "contracts\\SCEMScoring.sol:10",
+        "version": {
+          "withMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89",
+          "withoutMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89",
+          "linkedWithoutMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/interfaces/IBetFactoryCOFI.sol:IBetFactoryCOFI": {
+        "src": "contracts\\interfaces\\IBetFactoryCOFI.sol:4",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "forwardResolutionRequest(uint8)",
+          "notifyStatusChange(uint8,uint8)",
+          "canResolveBet(address,address)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/mocks/MockUSDL.sol:MockUSDL": {
+        "src": "contracts\\mocks\\MockUSDL.sol:7",
+        "version": {
+          "withMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298",
+          "withoutMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298",
+          "linkedWithoutMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20",
+          "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors",
+          "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata",
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "()",
+          "setAdmin(address,bool)",
+          "setBlocked(address,bool)",
+          "isAdmin(address)",
+          "mint(address,uint256)",
+          "drip()",
+          "decimals()",
+          "remainingMintAllowance(address)",
+          "nextResetTime(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "MockUSDL",
+            "src": "contracts\\mocks\\MockUSDL.sol:19"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "MockUSDL",
+              "label": "lastMintTimestamp",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\mocks\\MockUSDL.sol:11"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "mintedInPeriod",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\mocks\\MockUSDL.sol:12"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "admins",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\mocks\\MockUSDL.sol:13"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "blockedAddresses",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\mocks\\MockUSDL.sol:14"
+            }
+          ],
+          "types": {
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_bool": {
+              "label": "bool"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      }
+    },
+    {
+      "@openzeppelin/contracts/access/Ownable.sol:Ownable": {
+        "src": "@openzeppelin\\contracts\\access\\Ownable.sol:20",
+        "inherit": [
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin\\contracts\\access\\Ownable.sol:38"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "Ownable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts\\access\\Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC1155Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:113",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC721Errors": {
+        "src": "@openzeppelin\\contracts\\interfaces\\draft-IERC6093.sol:55",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:29",
+        "inherit": [
+          "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors",
+          "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata",
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "name()",
+          "symbol()",
+          "decimals()",
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "ERC20",
+            "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:44"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "ERC20",
+              "label": "_balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:30"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_allowances",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:32"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_totalSupply",
+              "type": "t_uint256",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:34"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_name",
+              "type": "t_string_storage",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:36"
+            },
+            {
+              "contract": "ERC20",
+              "label": "_symbol",
+              "type": "t_string_storage",
+              "src": "@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol:37"
+            }
+          ],
+          "types": {
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+              "label": "mapping(address => mapping(address => uint256))"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata": {
+        "src": "@openzeppelin\\contracts\\token\\ERC20\\extensions\\IERC20Metadata.sol:11",
+        "inherit": [
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20"
+        ],
+        "libraries": [],
+        "methods": [
+          "name()",
+          "symbol()",
+          "decimals()"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/utils/Context.sol:Context": {
+        "src": "@openzeppelin\\contracts\\utils\\Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "@openzeppelin/contracts/utils/ReentrancyGuard.sol:ReentrancyGuard": {
+        "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:25",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "ReentrancyGuard",
+            "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:47"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "ReentrancyGuard",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin\\contracts\\utils\\ReentrancyGuard.sol:40"
+            }
+          ],
+          "types": {
+            "t_uint256": {
+              "label": "uint256"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/BetCOFI.sol:BetCOFI": {
+        "src": "contracts\\BetCOFI.sol:13",
+        "version": {
+          "withMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860",
+          "withoutMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860",
+          "linkedWithoutMetadata": "df2903964d7c4d453d469495c81aaeea674ee3eda2f4fbad0027d2cb4096c860"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/utils/Context.sol:Context",
+          "@openzeppelin/contracts/utils/ReentrancyGuard.sol:ReentrancyGuard"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,string,string,string,string,uint256,address,address,uint8,bytes)",
+          "betOnSideAViaFactory(address,uint256,uint8)",
+          "betOnSideBViaFactory(address,uint256,uint8)",
+          "resolve()",
+          "setResolution(bytes)",
+          "claim()",
+          "cancelBet()",
+          "getInfo()",
+          "getUserBets(address)",
+          "getTradeCount()",
+          "calculatePotentialWinnings(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "BetCOFI",
+            "src": "contracts\\BetCOFI.sol:65"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "creator",
+            "src": "contracts\\BetCOFI.sol:25"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "creationDate",
+            "src": "contracts\\BetCOFI.sol:30"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "endDate",
+            "src": "contracts\\BetCOFI.sol:31"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "factory",
+            "src": "contracts\\BetCOFI.sol:32"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "token",
+            "src": "contracts\\BetCOFI.sol:33"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "resolutionType",
+            "src": "contracts\\BetCOFI.sol:34"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "BetCOFI",
+              "label": "title",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:26"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionCriteria",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:27"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "sideAName",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:28"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "sideBName",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:29"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionData",
+              "type": "t_bytes_storage",
+              "src": "contracts\\BetCOFI.sol:35"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "isResolved",
+              "type": "t_bool",
+              "src": "contracts\\BetCOFI.sol:39"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "isSideAWinner",
+              "type": "t_bool",
+              "src": "contracts\\BetCOFI.sol:40"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "status",
+              "type": "t_enum(BetStatus)1019",
+              "src": "contracts\\BetCOFI.sol:41"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolutionRequestedAt",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:42"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "totalSideA",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:44"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "totalSideB",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:45"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "betsOnSideA",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:46"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "betsOnSideB",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:47"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "hasClaimed",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetCOFI.sol:48"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "trades",
+              "type": "t_array(t_struct(TradeSnapshot)1033_storage)dyn_storage",
+              "src": "contracts\\BetCOFI.sol:51"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "scemPayout",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetCOFI.sol:52"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "resolvedPrice",
+              "type": "t_uint256",
+              "src": "contracts\\BetCOFI.sol:55"
+            },
+            {
+              "contract": "BetCOFI",
+              "label": "winnerValue",
+              "type": "t_string_storage",
+              "src": "contracts\\BetCOFI.sol:56"
+            }
+          ],
+          "types": {
+            "t_string_storage": {
+              "label": "string"
+            },
+            "t_bytes_storage": {
+              "label": "bytes"
+            },
+            "t_bool": {
+              "label": "bool"
+            },
+            "t_enum(BetStatus)1019": {
+              "label": "enum BetCOFI.BetStatus",
+              "members": [
+                "ACTIVE",
+                "RESOLVING",
+                "RESOLVED",
+                "UNDETERMINED"
+              ]
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_array(t_struct(TradeSnapshot)1033_storage)dyn_storage": {
+              "label": "struct BetCOFI.TradeSnapshot[]"
+            },
+            "t_struct(TradeSnapshot)1033_storage": {
+              "label": "struct BetCOFI.TradeSnapshot",
+              "members": [
+                {
+                  "label": "trader",
+                  "type": "t_address"
+                },
+                {
+                  "label": "probability",
+                  "type": "t_uint8"
+                },
+                {
+                  "label": "bondAmount",
+                  "type": "t_uint256"
+                },
+                {
+                  "label": "onSideA",
+                  "type": "t_bool"
+                }
+              ]
+            },
+            "t_uint8": {
+              "label": "uint8"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/BetFactoryCOFI.sol:BetFactoryCOFI": {
+        "src": "contracts\\BetFactoryCOFI.sol:10",
+        "version": {
+          "withMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302",
+          "withoutMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302",
+          "linkedWithoutMetadata": "24dfc6155feb00d7ea5e1705a542878998a835e88d6d17b98c5b0ee626a68302"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address)",
+          "setCreatorApproval(address,bool)",
+          "setResolverApproval(address,bool)",
+          "canCreateBet(address)",
+          "canResolveBet(address,address)",
+          "setBridgeReceiver(address)",
+          "processBridgeMessage(uint32,address,bytes)",
+          "forwardResolutionRequest(uint8)",
+          "notifyStatusChange(uint8,uint8)",
+          "createBet(string,string,string,string,uint256,uint8,bytes)",
+          "placeBet(address,bool,uint256,uint8)",
+          "createNewsBet(string,string,string,string,string,uint256)",
+          "getAllBets()",
+          "getBetCount()",
+          "isLegitBet(address)",
+          "getActiveBets()",
+          "getResolvingBets()",
+          "getResolvedBets()",
+          "getUndeterminedBets()",
+          "getBetsByStatus(uint8)",
+          "getActiveBetsCount()",
+          "getResolvingBetsCount()",
+          "getResolvedBetsCount()",
+          "getUndeterminedBetsCount()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "BetFactoryCOFI",
+            "src": "contracts\\BetFactoryCOFI.sol:43"
+          },
+          {
+            "kind": "state-variable-immutable",
+            "name": "usdcToken",
+            "src": "contracts\\BetFactoryCOFI.sol:11"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "bridgeReceiver",
+              "type": "t_address",
+              "src": "contracts\\BetFactoryCOFI.sol:12"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "allBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:13"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "deployedBets",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:14"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "approvedCreators",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:15"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "approvedResolvers",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\BetFactoryCOFI.sol:16"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "activeBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:19"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "resolvingBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:20"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "resolvedBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:21"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "undeterminedBets",
+              "type": "t_array(t_address)dyn_storage",
+              "src": "contracts\\BetFactoryCOFI.sol:22"
+            },
+            {
+              "contract": "BetFactoryCOFI",
+              "label": "betIndexInStatusArray",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\BetFactoryCOFI.sol:23"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address"
+            },
+            "t_array(t_address)dyn_storage": {
+              "label": "address[]"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_bool": {
+              "label": "bool"
+            },
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/SCEMScoring.sol:SCEMScoring": {
+        "src": "contracts\\SCEMScoring.sol:10",
+        "version": {
+          "withMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89",
+          "withoutMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89",
+          "linkedWithoutMetadata": "7b93751979aed4a06850a90b814a47b3ca910c016edcf84d81108333f743eb89"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/interfaces/IBetFactoryCOFI.sol:IBetFactoryCOFI": {
+        "src": "contracts\\interfaces\\IBetFactoryCOFI.sol:4",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "forwardResolutionRequest(uint8)",
+          "notifyStatusChange(uint8,uint8)",
+          "canResolveBet(address,address)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      },
+      "contracts/mocks/MockUSDL.sol:MockUSDL": {
+        "src": "contracts\\mocks\\MockUSDL.sol:7",
+        "version": {
+          "withMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298",
+          "withoutMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298",
+          "linkedWithoutMetadata": "ac032d0fff0f654afa729f6b456b64fec0da6be0b55a64d046eeb978032ec298"
+        },
+        "inherit": [
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20",
+          "@openzeppelin/contracts/interfaces/draft-IERC6093.sol:IERC20Errors",
+          "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:IERC20Metadata",
+          "@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "()",
+          "setAdmin(address,bool)",
+          "setBlocked(address,bool)",
+          "isAdmin(address)",
+          "mint(address,uint256)",
+          "drip()",
+          "decimals()",
+          "remainingMintAllowance(address)",
+          "nextResetTime(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "MockUSDL",
+            "src": "contracts\\mocks\\MockUSDL.sol:19"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "MockUSDL",
+              "label": "lastMintTimestamp",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\mocks\\MockUSDL.sol:11"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "mintedInPeriod",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts\\mocks\\MockUSDL.sol:12"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "admins",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\mocks\\MockUSDL.sol:13"
+            },
+            {
+              "contract": "MockUSDL",
+              "label": "blockedAddresses",
+              "type": "t_mapping(t_address,t_bool)",
+              "src": "contracts\\mocks\\MockUSDL.sol:14"
+            }
+          ],
+          "types": {
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)"
+            },
+            "t_bool": {
+              "label": "bool"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.22"
+      }
+    }
+  ]
+}
