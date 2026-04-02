@@ -1,0 +1,88 @@
+.panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-maple-mono, monospace);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.owsBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+.address {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.loading {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.buyBtn {
+  width: 100%;
+  padding: 10px;
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.buyBtn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.buyBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}

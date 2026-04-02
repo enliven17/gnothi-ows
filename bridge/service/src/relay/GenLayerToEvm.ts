@@ -10,6 +10,7 @@ import { createAccount, createClient } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
 import type { Address } from "genlayer-js/types";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { notifyResolved } from "../xmtp/marketBot.js";
 import {
   getBridgeForwarderAddress,
   getBridgeSenderAddress,
@@ -158,6 +159,21 @@ export class GenLayerToEvmRelay {
       console.log(`[GL→EVM] TX: ${tx.hash}`);
       const receipt = await tx.wait();
       console.log(`[GL→EVM] Confirmed in block ${receipt.blockNumber}`);
+
+      // Notify XMTP group chat — resolution delivered onchain
+      try {
+        const targetContract = message.targetContract;
+        await notifyResolved(
+          targetContract,
+          targetContract, // title unknown at relay time, use address as fallback
+          'SIDE_A',       // actual winner decoded onchain — placeholder
+          'Winner',
+          '0',
+          0
+        );
+      } catch (xmtpErr) {
+        console.error('[GL→EVM] XMTP notify error (non-blocking):', xmtpErr);
+      }
     } catch (error) {
       console.error(`[GL→EVM] Error relaying ${hash}:`, error);
     }

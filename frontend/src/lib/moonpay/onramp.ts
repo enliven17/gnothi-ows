@@ -1,61 +1,74 @@
 'use client';
 
 /**
- * MoonPay onramp integration.
+ * MoonPay onramp integration — agent skill pattern.
  *
- * Opens the MoonPay widget so users can buy USDC with fiat (card, bank transfer).
- * After purchase, the USDC lands directly in the user's wallet and can be
- * used immediately for prediction market bets.
+ * Flow:
+ *  1. Frontend calls /api/moonpay/sign (server) with wallet address + amount
+ *  2. Server signs the URL with HMAC-SHA256 using the SECRET key
+ *  3. Frontend opens the signed URL as a popup
+ *  4. User buys USDC — funds arrive directly in their wallet
+ *  5. MoonPay calls /api/moonpay/webhook on completion
  *
- * Docs: https://docs.moonpay.com/moonpay/web-sdk
+ * The secret key NEVER touches the browser. This satisfies MoonPay's
+ * "agent skill" security requirement.
  */
 
-const MOONPAY_BASE_URL = 'https://buy.moonpay.com';
-const MOONPAY_API_KEY = process.env.NEXT_PUBLIC_MOONPAY_API_KEY ?? '';
-
 export interface OnrampOptions {
-  /** Destination wallet address (receives the purchased USDC) */
   walletAddress: string;
-  /** Pre-fill amount in USD */
   baseCurrencyAmount?: number;
-  /** Callback when widget closes */
+  currencyCode?: string;
   onClose?: () => void;
-  /** Callback when transaction completes */
-  onSuccess?: (txHash: string) => void;
+  onSuccess?: (txId: string) => void;
 }
 
 /**
- * Open the MoonPay onramp widget in a popup window.
- * Targets USDC on Base Sepolia (testnet) or Base Mainnet.
+ * Open the MoonPay widget with a server-signed URL.
+ * Falls back to unsigned URL if signing API is unavailable.
  */
-export function openMoonPayOnramp(options: OnrampOptions): void {
-  const { walletAddress, baseCurrencyAmount = 50, onClose, onSuccess } = options;
-
-  const params = new URLSearchParams({
-    apiKey: MOONPAY_API_KEY,
-    currencyCode: 'usdc_base',        // USDC on Base
+export async function openMoonPayOnramp(options: OnrampOptions): Promise<void> {
+  const {
     walletAddress,
-    baseCurrencyCode: 'usd',
-    baseCurrencyAmount: baseCurrencyAmount.toString(),
-    colorCode: '%230f172a',           // match app accent color
-    showWalletAddressForm: 'false',   // address is pre-filled
-  });
+    baseCurrencyAmount = 50,
+    currencyCode = 'usdc',
+    onClose,
+    onSuccess,
+  } = options;
 
-  const url = `${MOONPAY_BASE_URL}?${params.toString()}`;
+  let widgetUrl: string;
 
-  const popup = window.open(
-    url,
-    'moonpay-onramp',
-    'width=480,height=700,scrollbars=yes,resizable=yes'
-  );
+  try {
+    // Get server-signed URL
+    const res = await fetch('/api/moonpay/sign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ walletAddress, amount: baseCurrencyAmount, currencyCode }),
+    });
+
+    if (!res.ok) throw new Error('Sign API failed');
+    const { url } = await res.json();
+    widgetUrl = url;
+  } catch {
+    // Fallback: unsigned URL (sandbox still works without signature)
+    const pk = process.env.NEXT_PUBLIC_MOONPAY_API_KEY ?? '';
+    const params = new URLSearchParams({
+      apiKey: pk,
+      currencyCode,
+      walletAddress,
+      baseCurrencyCode: 'usd',
+      baseCurrencyAmount: String(baseCurrencyAmount),
+    });
+    widgetUrl = `https://buy-sandbox.moonpay.com?${params.toString()}`;
+  }
+
+  const popup = window.open(widgetUrl, 'moonpay-onramp', 'width=480,height=700,scrollbars=yes');
 
   if (!popup) {
-    // Fallback: open in same tab if popup was blocked
-    window.location.href = url;
+    window.location.href = widgetUrl;
     return;
   }
 
-  // Poll for completion or close
+  // Poll for popup close
   const interval = setInterval(() => {
     if (popup.closed) {
       clearInterval(interval);
@@ -63,9 +76,9 @@ export function openMoonPayOnramp(options: OnrampOptions): void {
     }
   }, 500);
 
-  // Listen for postMessage from MoonPay widget
+  // Listen for MoonPay postMessage completion event
   const handleMessage = (event: MessageEvent) => {
-    if (!event.origin.includes('moonpay.com')) return;
+    if (!String(event.origin).includes('moonpay.com')) return;
     if (event.data?.type === 'moonpay:transaction:completed') {
       onSuccess?.(event.data.transactionId ?? '');
       clearInterval(interval);
@@ -75,9 +88,6 @@ export function openMoonPayOnramp(options: OnrampOptions): void {
   window.addEventListener('message', handleMessage);
 }
 
-/**
- * Check if MoonPay is configured (API key present).
- */
 export function isMoonPayConfigured(): boolean {
-  return MOONPAY_API_KEY.length > 0;
+  return (process.env.NEXT_PUBLIC_MOONPAY_API_KEY ?? '').length > 0;
 }

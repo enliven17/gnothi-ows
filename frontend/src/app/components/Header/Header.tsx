@@ -12,6 +12,7 @@ import InfoIcon from '../Shared/InfoIcon';
 import Tooltip from '../Shared/Tooltip';
 import { USDL_ADDRESS, MOCK_USDL_ABI, USDL_MULTIPLIER } from '../../../lib/constants';
 import { dripUsdl, getUsdlDripStatus, getWalletActionErrorDetails, isUsdlDripLimitError } from '../../../lib/onchain/writes';
+import { openMoonPayOnramp, isMoonPayConfigured } from '../../../lib/moonpay/onramp';
 
 interface HeaderProps {
     onNavigate: (page: 'landing' | 'markets' | 'docs') => void;
@@ -247,6 +248,30 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                                 zIndex: 50,
                                 minWidth: '160px'
                             }}>
+                                {isMoonPayConfigured() && (
+                                    <button
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            width: '100%',
+                                            padding: '12px 16px',
+                                            border: 'none',
+                                            backgroundColor: 'transparent',
+                                            fontSize: '14px',
+                                            cursor: 'pointer',
+                                            borderRadius: '8px'
+                                        }}
+                                        onClick={() => {
+                                            if (walletAddress) {
+                                                openMoonPayOnramp({ walletAddress });
+                                                setBalanceDropdownOpen(false);
+                                            }
+                                        }}
+                                    >
+                                        <TopUpIcon size={16} />
+                                        <span style={{ marginLeft: '8px' }}>Buy USDC</span>
+                                    </button>
+                                )}
                                 <button
                                     style={{
                                         display: 'flex',

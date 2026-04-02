@@ -19,6 +19,10 @@ import {
   getBridgeSenderAddress,
 } from "../config.js";
 import { recordOracle } from "../resolution/OracleRegistry.js";
+import {
+  notifyResolutionStarted,
+  notifyMarketCreated,
+} from "../xmtp/marketBot.js";
 
 const RESOLUTION_TYPES = ["CRYPTO", "STOCKS", "NEWS"];
 const BASE_SEPOLIA_LZ_EID = 40245;
@@ -241,6 +245,9 @@ export class EvmToGenLayerRelay {
         console.log(`  Sides: "${sideAName}" vs "${sideBName}"`);
         console.log(`  Data: ${decoded ? `[${decoded.join(", ")}]` : "(empty)"}`);
         console.log(`  TX: ${event.transactionHash}`);
+
+        // Notify XMTP group chat that resolution started
+        await notifyResolutionStarted(betContract as string, title as string);
 
         // Deploy oracle to GenLayer
         await this.deployOracle(
