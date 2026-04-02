@@ -15,8 +15,8 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://*.tradingview.com https://fonts.googleapis.com",
               "img-src 'self' data: https: https://*.tradingview.com",
               "font-src 'self' https: https://*.tradingview.com",
-              "connect-src 'self' https://auth.privy.io https://sepolia.base.org wss: https: https://*.tradingview.com http://pmkit-backend.courtofinternet.com",
-              "frame-src 'self' https://auth.privy.io https://*.tradingview.com https://tradingview-widget.com https://www.tradingview-widget.com https://charting-library.tradingview.com https://widget.tradingview.com https://tradingview-embed-widget.com",
+              "connect-src 'self' https://auth.privy.io https://sepolia.base.org wss: https: https://*.tradingview.com http://pmkit-backend.courtofinternet.com https://*.xmtp.network wss://*.xmtp.network https://buy.moonpay.com https://*.moonpay.com",
+              "frame-src 'self' https://auth.privy.io https://*.tradingview.com https://tradingview-widget.com https://www.tradingview-widget.com https://charting-library.tradingview.com https://widget.tradingview.com https://tradingview-embed-widget.com https://buy.moonpay.com",
               "frame-ancestors 'self' https://auth.privy.io",
               "worker-src 'self' blob:",
               "object-src 'none'"
@@ -31,7 +31,11 @@ const nextConfig: NextConfig = {
     "@reown/appkit",
     "@walletconnect/ethereum-provider"
   ],
+  serverExternalPackages: ['@open-wallet-standard/core'],
   webpack: (config, { isServer }) => {
+    // XMTP requires WebAssembly
+    config.experiments = { ...config.experiments, asyncWebAssembly: true };
+
     // Node.js polyfills for client-side
     if (!isServer) {
       config.resolve.fallback = {

@@ -12,6 +12,7 @@ import { formatVolume, formatAddress, formatResolutionDate } from '../../../util
 import CopyIcon from '../Shared/CopyIcon';
 import ResolutionRules from '../Shared/ResolutionRules';
 import AIConsole from '../AIConsole/AIConsole';
+import MarketChat from '../MarketChat/MarketChat';
 
 interface MarketFullPageProps {
     onBack: () => void;
@@ -372,6 +373,16 @@ const MarketFullPage: React.FC<MarketFullPageProps> = ({
                 {state === 'RESOLVING' && renderResolvingMarketSidebar()}
                 {isActive && renderActiveMarketSidebar()}
             </div>
+
+            {/* Market Group Chat — always visible below the main layout */}
+            {market && (
+                <div style={{ marginTop: '32px' }}>
+                    <MarketChat
+                        marketId={market.contractId ?? String(market.id ?? '')}
+                        marketTitle={marketTitle}
+                    />
+                </div>
+            )}
         </div>
     );
 };

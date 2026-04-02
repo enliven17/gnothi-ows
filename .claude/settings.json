@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(//c/Users/enliven/AppData/Local/Temp/claude/c--Users-enliven-Documents-GitHub-gnothi-ows/c036e3a3-8020-45eb-a243-8817d5475507/tasks/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\enliven\\Documents\\GitHub\\gnothi-ows\\.claude\\cache\\agents",
+      "c:\\Users\\enliven\\Documents\\GitHub\\gnothi-ows\\.claude\\cache\\agents\\oracle"
+    ]
+  }
+}
