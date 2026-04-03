@@ -91,7 +91,7 @@ export async function initOWSVault(callerKey: string, ownerKey?: string): Promis
   } catch {
     try {
       sdk.createPolicy(
-        JSON.stringify({ id: OWS_POLICY_ID, name: 'Relay Chain Allowlist', wallets: [OWS_RELAY_WALLET, OWS_OWNER_WALLET], chains: ALLOWED_CHAINS }),
+        JSON.stringify({ id: OWS_POLICY_ID, name: 'Relay Chain Allowlist', version: '1.0', wallets: [OWS_RELAY_WALLET, OWS_OWNER_WALLET], chains: ALLOWED_CHAINS }),
         VAULT_PATH,
       );
       console.log(`[OWS] Policy: ${OWS_POLICY_ID} registered (chains: ${ALLOWED_CHAINS.join(', ')})`);
