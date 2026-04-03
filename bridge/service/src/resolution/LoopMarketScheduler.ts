@@ -65,15 +65,42 @@ export class LoopMarketScheduler {
   // ── Price fetch ────────────────────────────────────────────────────────────
 
   private async fetchPrice(geckoId: string): Promise<number> {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${geckoId}&vs_currencies=usd`;
+    // Primary: CoinGecko
+    const geckoUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${geckoId}&vs_currencies=usd`;
     try {
-      const resp = await fetch(url);
-      const data = await resp.json() as Record<string, { usd: number }>;
-      return data[geckoId]?.usd ?? 0;
+      const resp = await fetch(geckoUrl);
+      if (resp.ok) {
+        const data = await resp.json() as Record<string, { usd: number }>;
+        const price = data[geckoId]?.usd ?? 0;
+        if (price > 0) return price;
+        console.warn(`[LoopMarket] CoinGecko returned empty price for ${geckoId}, status=${resp.status}`);
+      } else {
+        console.warn(`[LoopMarket] CoinGecko HTTP ${resp.status} for ${geckoId}`);
+      }
     } catch (err) {
-      console.error(`[LoopMarket] CoinGecko fetch failed for ${geckoId}:`, err);
-      return 0;
+      console.error(`[LoopMarket] CoinGecko fetch error for ${geckoId}:`, err);
     }
+
+    // Fallback: Binance (free, no key required)
+    const symbolMap: Record<string, string> = { bitcoin: "BTCUSDT", ethereum: "ETHUSDT" };
+    const binanceSymbol = symbolMap[geckoId];
+    if (binanceSymbol) {
+      try {
+        const resp = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${binanceSymbol}`);
+        if (resp.ok) {
+          const data = await resp.json() as { price: string };
+          const price = parseFloat(data.price);
+          if (price > 0) {
+            console.log(`[LoopMarket] Using Binance price for ${geckoId}: $${price}`);
+            return price;
+          }
+        }
+      } catch (err) {
+        console.error(`[LoopMarket] Binance fetch error for ${geckoId}:`, err);
+      }
+    }
+
+    return 0;
   }
 
   // ── Market creation ────────────────────────────────────────────────────────
