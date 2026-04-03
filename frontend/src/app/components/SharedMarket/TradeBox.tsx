@@ -5,10 +5,7 @@ import {
     claimRewards,
     placeBet,
     approveUsdlUnlimited,
-    dripUsdl,
-    getUsdlDripStatus,
     getWalletActionErrorDetails,
-    isUsdlDripLimitError
 } from '../../../lib/onchain/writes';
 import { useWallet } from '../../providers/WalletProvider';
 import { useToast } from '../../providers/ToastProvider';
@@ -17,7 +14,7 @@ import ConnectWalletPrompt from '../Wallet/ConnectWalletPrompt';
 import { readContract } from 'wagmi/actions';
 import { wagmiConfig } from '../../../lib/onchain/wagmiConfig';
 import { baseSepolia } from 'wagmi/chains';
-import { USDL_ADDRESS, USDL_MULTIPLIER, FACTORY_ADDRESS, MOCK_USDL_ABI } from '../../../lib/constants';
+import { USDC_ADDRESS, USDC_MULTIPLIER, FACTORY_ADDRESS, MOCK_USDL_ABI } from '../../../lib/constants';
 import { scemScore, scemPreview } from '../../../lib/scem';
 
 interface TradeBoxProps {
@@ -31,7 +28,6 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
     const [selectedOutcome, setSelectedOutcome] = useState<'YES' | 'NO'>('YES');
     const [confidence, setConfidence] = useState<number>(70);
     const [usdlBalance, setUsdlBalance] = React.useState<bigint | undefined>(undefined);
-    const [isDripping, setIsDripping] = React.useState(false);
     const [isApproving, setIsApproving] = React.useState(false);
     const [isPlacingBet, setIsPlacingBet] = React.useState(false);
 
@@ -39,7 +35,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
     const { showToast } = useToast();
     const { needsApproval, refetchAllowance } = useAllowance();
 
-    // Fetch USDL balance only (allowance is now handled by context)
+    // Fetch USDC balance (allowance is handled by context)
     const fetchUsdlBalance = React.useCallback(async () => {
         if (!walletAddress || !isConnected) {
             setUsdlBalance(undefined);
@@ -49,14 +45,14 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
         try {
             const balance = await readContract(wagmiConfig, {
                 chainId: baseSepolia.id,
-                address: USDL_ADDRESS,
+                address: USDC_ADDRESS,
                 abi: MOCK_USDL_ABI,
                 functionName: 'balanceOf',
                 args: [walletAddress as `0x${string}`]
             });
             setUsdlBalance(balance);
         } catch (error) {
-            console.error('Failed to fetch USDL balance:', error);
+            console.error('Failed to fetch USDC balance:', error);
             setUsdlBalance(undefined);
         }
     }, [walletAddress, isConnected]);
@@ -109,13 +105,13 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
             await approveUsdlUnlimited(FACTORY_ADDRESS as `0x${string}`);
 
             // Success: Show immediate feedback and refresh allowance
-            showToast('USDL approval successful! You can now place bets.', 'success');
+            showToast('USDC approval successful! You can now place bets.', 'success');
 
             // Immediately refresh allowance for instant UI update
             await refetchAllowance();
 
         } catch (error: unknown) {
-            console.error('Failed to approve USDL:', error);
+            console.error('Failed to approve USDC:', error);
             const { message, code } = getWalletActionErrorDetails(error);
             const errorMessage = message?.toLowerCase() || '';
             const errorCode = code;
@@ -143,73 +139,8 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
     const numericAmount = parseFloat(amount) || 0;
     const marketProbability = market ? market.probYes * 100 : probability;
 
-    const formatResetTime = React.useCallback((unixTimestamp: bigint) => {
-        if (unixTimestamp <= 0n) {
-            return '24 hours';
-        }
-
-        return new Intl.DateTimeFormat(undefined, {
-            dateStyle: 'medium',
-            timeStyle: 'short'
-        }).format(Number(unixTimestamp) * 1000);
-    }, []);
-
-    // Handle drip functionality
-    const handleDrip = async () => {
-        if (!isConnected || !walletAddress) return;
-
-        setIsDripping(true);
-        try {
-            const dripStatus = await getUsdlDripStatus(walletAddress as `0x${string}`);
-
-            if (dripStatus.remainingAllowance < BigInt(100 * USDL_MULTIPLIER)) {
-                showToast(
-                    `Daily drip limit reached. Try again after ${formatResetTime(dripStatus.nextResetTime)}.`,
-                    'warning'
-                );
-                return;
-            }
-
-            await dripUsdl();
-            showToast('Successfully received 100 USDL!', 'success');
-            await fetchUsdlBalance(); // Refresh balance
-        } catch (error: unknown) {
-            const { message, code } = getWalletActionErrorDetails(error);
-            const errorMessage = message?.toLowerCase() || '';
-            const errorCode = code;
-
-            if (
-                errorCode === 4001 ||
-                errorCode === 'ACTION_REJECTED' ||
-                errorMessage.includes('user rejected') ||
-                errorMessage.includes('cancelled') ||
-                errorMessage.includes('canceled') ||
-                errorMessage.includes('declined') ||
-                errorMessage.includes('denied')
-            ) {
-                showToast('Drip cancelled. You can try again when ready.', 'info');
-            } else if (isUsdlDripLimitError(error)) {
-                const dripStatus = await getUsdlDripStatus(walletAddress as `0x${string}`);
-                if (dripStatus.remainingAllowance < BigInt(100 * USDL_MULTIPLIER)) {
-                    showToast(
-                        `Daily drip limit reached. Try again after ${formatResetTime(dripStatus.nextResetTime)}.`,
-                        'warning'
-                    );
-                } else {
-                    console.error('Failed to drip USDL:', error);
-                    showToast('Failed to get USDL. Please try again.', 'error');
-                }
-            } else {
-                console.error('Failed to drip USDL:', error);
-                showToast('Failed to get USDL. Please try again.', 'error');
-            }
-        } finally {
-            setIsDripping(false);
-        }
-    };
-
     // Allowance check comes from context, only need to check balance
-    const amountInUnits = BigInt(Math.floor(numericAmount * USDL_MULTIPLIER));
+    const amountInUnits = BigInt(Math.floor(numericAmount * USDC_MULTIPLIER));
     const insufficientBalance = usdlBalance ? usdlBalance < amountInUnits : false;
 
     // Handle different market states
@@ -245,12 +176,12 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                         <div className={styles.positionSummary}>
                             <div className={styles.positionRow}>
                                 <span>Your bet:</span>
-                                <span>{userStatus.position!.amount} USDL on {userStatus.position!.outcome}</span>
+                                <span>{userStatus.position!.amount} USDC on {userStatus.position!.outcome}</span>
                             </div>
                             {userStatus.userWon ? (
                                 <div className={styles.positionRow}>
                                     <span>You won:</span>
-                                    <span className={styles.winAmount}>+{userStatus.potentialWinnings.toFixed(0)} USDL</span>
+                                    <span className={styles.winAmount}>+{userStatus.potentialWinnings.toFixed(0)} USDC</span>
                                 </div>
                             ) : (
                                 <div className={styles.positionRow}>
@@ -259,7 +190,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                             )}
                             {userStatus.canClaim && (
                                 <button className={styles.claimButton} onClick={handleClaim}>
-                                    Claim {userStatus.potentialWinnings.toFixed(0)} USDL
+                                    Claim {userStatus.potentialWinnings.toFixed(0)} USDC
                                 </button>
                             )}
                             {userStatus.claimed && (
@@ -305,7 +236,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                         <div className={styles.positionSummary}>
                             <div className={styles.positionRow}>
                                 <span>Your bet:</span>
-                                <span>{userStatus.position!.amount} USDL on {userStatus.position!.outcome}</span>
+                                <span>{userStatus.position!.amount} USDC on {userStatus.position!.outcome}</span>
                             </div>
                             <p className={styles.waitingText}>Waiting for resolution...</p>
                         </div>
@@ -340,7 +271,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                     <div className={styles.positionSummary}>
                         <div className={styles.positionRow}>
                             <span>Current bet:</span>
-                            <span>{userStatus.position!.amount} USDL on {userStatus.position!.outcome}</span>
+                            <span>{userStatus.position!.amount} USDC on {userStatus.position!.outcome}</span>
                         </div>
                     </div>
 
@@ -380,7 +311,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                             <span onClick={() => setAmount('20')}>20$</span>
                             <span onClick={() => setAmount('50')}>50$</span>
                             {usdlBalance !== undefined && (
-                                <span onClick={() => setAmount((Number(usdlBalance) / USDL_MULTIPLIER).toFixed(2))}>Max</span>
+                                <span onClick={() => setAmount((Number(usdlBalance) / USDC_MULTIPLIER).toFixed(2))}>Max</span>
                             )}
                         </span>
                     </div>
@@ -392,35 +323,11 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                         />
-                        <span className={styles.usdcSuffix}>USDL</span>
+                        <span className={styles.usdcSuffix}>USDC</span>
                     </div>
                     {usdlBalance !== undefined ? (
-                        <div style={{
-                            fontSize: '11px',
-                            color: '#6b7280',
-                            marginTop: '4px',
-                            textAlign: 'right',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <span>Balance: {(Number(usdlBalance) / USDL_MULTIPLIER).toFixed(2)} USDL</span>
-                            <button
-                                onClick={handleDrip}
-                                disabled={isDripping}
-                                style={{
-                                    background: '#10b981',
-                                    color: 'white',
-                                    border: 'none',
-                                    padding: '2px 6px',
-                                    borderRadius: '4px',
-                                    fontSize: '10px',
-                                    cursor: isDripping ? 'not-allowed' : 'pointer',
-                                    opacity: isDripping ? 0.7 : 1
-                                }}
-                            >
-                                {isDripping ? 'Getting...' : 'Get USDL'}
-                            </button>
+                        <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px', textAlign: 'right' }}>
+                            Balance: {(Number(usdlBalance) / USDC_MULTIPLIER).toFixed(2)} USDC
                         </div>
                     ) : null}
                 </div>
@@ -482,7 +389,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                                 const winnersPool = market.volume * (isYes ? market.probYes : market.probNo);
                                 const losersPool = market.volume * (isYes ? market.probNo : market.probYes);
                                 const preview = scemPreview(confidence, numericAmount, winnersPool, losersPool);
-                                return `Est. payout if correct: ~${preview.estimatedWinPayout.toFixed(2)} USDL`;
+                                return `Est. payout if correct: ~${preview.estimatedWinPayout.toFixed(2)} USDC`;
                             })()}
                         </div>
                     )}
@@ -495,7 +402,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                         disabled
                         style={{ backgroundColor: '#ef4444', border: '1px solid #ef4444', opacity: 0.7 }}
                     >
-                        Insufficient USDL Balance
+                        Insufficient USDC Balance
                     </button>
                 )}
 
@@ -507,7 +414,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                         disabled={isApproving}
                         style={{ backgroundColor: '#f59e0b', border: '1px solid #f59e0b' }}
                     >
-                        {isApproving ? 'Check your wallet to approve...' : 'Approve USDL to place bets'}
+                        {isApproving ? 'Check your wallet to approve...' : 'Approve USDC to place bets'}
                     </button>
                 )}
 
@@ -530,7 +437,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                             setIsPlacingBet(true);
                             try {
                                 await placeBet(market.contractId as `0x${string}`, selectedOutcome, numericAmount > 0 ? numericAmount : 0, confidence);
-                                showToast(`Bet placed successfully! ${numericAmount} USDL on ${selectedOutcome}.`, 'success');
+                                showToast(`Bet placed successfully! ${numericAmount} USDC on ${selectedOutcome}.`, 'success');
                                 // Refresh balance after successful bet
                                 await fetchUsdlBalance();
                                 // Clear the amount input after successful bet
@@ -566,7 +473,7 @@ const TradeBox: React.FC<TradeBoxProps> = ({ probability, market }) => {
                             ? 'Connecting wallet...'
                             : isPlacingBet
                             ? 'Check your wallet to confirm...'
-                            : `Buy ${selectedOutcome === 'YES' ? (market?.sideAName ?? 'YES') : (market?.sideBName ?? 'NO')} for ${numericAmount > 0 ? numericAmount : '0'} USDL`}
+                            : `Buy ${selectedOutcome === 'YES' ? (market?.sideAName ?? 'YES') : (market?.sideBName ?? 'NO')} for ${numericAmount > 0 ? numericAmount : '0'} USDC`}
                     </button>
                 )}
             </>

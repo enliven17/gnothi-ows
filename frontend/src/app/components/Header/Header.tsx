@@ -11,7 +11,6 @@ import TopUpIcon from '../Shared/TopUpIcon';
 import InfoIcon from '../Shared/InfoIcon';
 import Tooltip from '../Shared/Tooltip';
 import { USDL_ADDRESS, MOCK_USDL_ABI, USDL_MULTIPLIER } from '../../../lib/constants';
-import { dripUsdl, getUsdlDripStatus, getWalletActionErrorDetails, isUsdlDripLimitError } from '../../../lib/onchain/writes';
 import { openMoonPayOnramp, isMoonPayConfigured } from '../../../lib/moonpay/onramp';
 
 interface HeaderProps {
@@ -23,7 +22,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
     const { isConnected, walletAddress, isConnecting, connect, disconnect } = useWallet();
     const { showToast } = useToast();
     const [usdlBalance, setUsdlBalance] = React.useState<bigint | undefined>(undefined);
-    const [isDripping, setIsDripping] = React.useState(false);
     const [walletDropdownOpen, setWalletDropdownOpen] = React.useState(false);
     const [balanceDropdownOpen, setBalanceDropdownOpen] = React.useState(false);
     const [scrolled, setScrolled] = React.useState(false);
@@ -40,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
         ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
         : '';
 
-    // Fetch USDL balance
+    // Fetch USDC balance
     const fetchUsdlBalance = React.useCallback(async () => {
         if (!walletAddress || !isConnected) {
             setUsdlBalance(undefined);
@@ -57,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
             });
             setUsdlBalance(balance);
         } catch (error) {
-            console.error('Failed to fetch USDL balance:', error);
+            console.error('Failed to fetch USDC balance:', error);
             setUsdlBalance(undefined);
         }
     }, [walletAddress, isConnected]);
@@ -80,57 +78,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
         disconnect();
         setWalletDropdownOpen(false);
     }, [disconnect]);
-
-    const handleTopUp = React.useCallback(async () => {
-        if (!walletAddress) {
-            return;
-        }
-
-        setIsDripping(true);
-        try {
-            const dripStatus = await getUsdlDripStatus(walletAddress as `0x${string}`);
-            if (dripStatus.remainingAllowance < BigInt(100 * USDL_MULTIPLIER)) {
-                const retryAt = dripStatus.nextResetTime > 0n
-                    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(Number(dripStatus.nextResetTime) * 1000)
-                    : '24 hours';
-                showToast(`You already used the faucet. Wait until ${retryAt}.`, 'warning');
-                setBalanceDropdownOpen(false);
-                return;
-            }
-
-            await dripUsdl();
-            showToast('Successfully received 100 USDL!', 'success');
-            await fetchUsdlBalance(); // Refresh balance
-            setBalanceDropdownOpen(false);
-        } catch (error: unknown) {
-            const { message, code } = getWalletActionErrorDetails(error);
-            const errorMessage = message?.toLowerCase() || '';
-            const errorCode = code;
-
-            if (
-                errorCode === 4001 ||
-                errorCode === 'ACTION_REJECTED' ||
-                errorMessage.includes('user rejected') ||
-                errorMessage.includes('cancelled') ||
-                errorMessage.includes('canceled') ||
-                errorMessage.includes('declined') ||
-                errorMessage.includes('denied')
-            ) {
-                showToast('Drip cancelled. You can try again when ready.', 'info');
-            } else if (isUsdlDripLimitError(error)) {
-                const dripStatus = await getUsdlDripStatus(walletAddress as `0x${string}`);
-                const retryAt = dripStatus.nextResetTime > 0n
-                    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(Number(dripStatus.nextResetTime) * 1000)
-                    : '24 hours';
-                showToast(`You already used the faucet. Wait until ${retryAt}.`, 'warning');
-            } else {
-                console.error('Failed to drip USDL:', error);
-                showToast('Failed to get USDL. Please try again.', 'error');
-            }
-        } finally {
-            setIsDripping(false);
-        }
-    }, [fetchUsdlBalance, showToast, walletAddress]);
 
     // Close dropdowns when clicking outside
     React.useEffect(() => {
@@ -228,8 +175,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                             }}
                             onClick={handleBalanceClick}
                         >
-                            {(Number(usdlBalance) / USDL_MULTIPLIER).toFixed(2)} USDL
-                            <Tooltip content="USDL on Base Sepolia Testnet">
+                            {(Number(usdlBalance) / USDL_MULTIPLIER).toFixed(2)} USDC
+                            <Tooltip content="USDC on Base Sepolia">
                                 <div style={{ marginLeft: '6px', color: 'var(--text-muted)', display: 'flex' }}>
                                     <InfoIcon size={12} />
                                 </div>
@@ -272,24 +219,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                                         <span style={{ marginLeft: '8px' }}>Buy USDC</span>
                                     </button>
                                 )}
-                                <button
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        width: '100%',
-                                        padding: '12px 16px',
-                                        border: 'none',
-                                        backgroundColor: 'transparent',
-                                        fontSize: '14px',
-                                        cursor: 'pointer',
-                                        borderRadius: '8px'
-                                    }}
-                                    onClick={handleTopUp}
-                                    disabled={isDripping}
-                                >
-                                    <TopUpIcon size={16} />
-                                    <span style={{ marginLeft: '8px' }}>{isDripping ? 'Getting USDL...' : 'Get USDL'}</span>
-                                </button>
                                 <a
                                     href="https://www.alchemy.com/faucets/base-sepolia"
                                     target="_blank"

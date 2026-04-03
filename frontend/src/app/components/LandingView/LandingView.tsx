@@ -45,6 +45,57 @@ const MARKET_TYPES = [
     { icon: NewsIcon,   label: 'News',    subtitle: 'AI reads evidence URLs and delivers a verdict',  source: 'AI-powered'   },
 ];
 
+const XmtpIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    </svg>
+);
+
+const TreasuryIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zM11.5 1L2 6v2h19V6l-9.5-5z"/>
+    </svg>
+);
+
+const MoonpayIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+    </svg>
+);
+
+const BotIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3zM7 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+    </svg>
+);
+
+const COMMONS_FEATURES = [
+    {
+        icon: XmtpIcon,
+        label: 'Group Chat',
+        subtitle: 'Per-market XMTP group conversations for traders to coordinate in real time.',
+        source: 'XMTP v3',
+    },
+    {
+        icon: TreasuryIcon,
+        label: 'Group Treasury',
+        subtitle: 'Pool USDC into a shared vault and bet as a collective via GroupMarket.sol.',
+        source: 'On-chain',
+    },
+    {
+        icon: MoonpayIcon,
+        label: 'USDC Onramp',
+        subtitle: 'Buy USDC with a credit card directly in the app — no CEX required.',
+        source: 'MoonPay',
+    },
+    {
+        icon: BotIcon,
+        label: 'MarketBot',
+        subtitle: 'AI-powered bot posts resolution updates and bet notifications into group chats.',
+        source: 'XMTP Agent',
+    },
+];
+
 const LandingView: React.FC = () => {
     const router = useRouter();
 
@@ -67,7 +118,7 @@ const LandingView: React.FC = () => {
                 >
                     <motion.span className={styles.badge} variants={fadeUp} custom={0}>
                         <span className={styles.badgeDot} />
-                        Base Sepolia · Powered by GenLayer
+                        Base Sepolia · GenLayer · XMTP · MoonPay
                     </motion.span>
 
                     <motion.h1 className={styles.heroTitle} variants={fadeUp} custom={1}>
@@ -137,6 +188,47 @@ const LandingView: React.FC = () => {
                 </motion.div>
             </section>
 
+            {/* ── The Commons: Group Coordination Layer ── */}
+            <section className={styles.types}>
+                <motion.div
+                    className={styles.typesInner}
+                    style={{ maxWidth: '1200px' }}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: '-80px' }}
+                    variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+                >
+                    <div className={styles.sectionHeader}>
+                        <motion.p className={styles.sectionLabel} variants={fadeUp} custom={0}>
+                            The Commons
+                        </motion.p>
+                        <motion.h2 className={styles.sectionTitle} variants={fadeUp} custom={0}>
+                            Group coordination & shared capital
+                        </motion.h2>
+                        <motion.p className={styles.heroSub} style={{ marginTop: '8px', textAlign: 'center' }} variants={fadeUp} custom={1}>
+                            Trade together. Chat together. Pool capital and bet as a collective.
+                        </motion.p>
+                    </div>
+                    <div className={styles.typeGrid4}>
+                        {COMMONS_FEATURES.map((f, i) => (
+                            <motion.div
+                                key={f.label}
+                                className={styles.typeCard}
+                                variants={fadeUp}
+                                custom={i + 1}
+                            >
+                                <div className={styles.typeIconArea}>
+                                    <f.icon />
+                                </div>
+                                <h3 className={styles.typeTitle}>{f.label}</h3>
+                                <p className={styles.typeSubtitle}>{f.subtitle}</p>
+                                <span className={styles.typeSourcePill}>{f.source}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </section>
+
             {/* ── Footer ── */}
             <footer className={styles.footer}>
                 <span>gnothi · Base Sepolia</span>
@@ -144,6 +236,10 @@ const LandingView: React.FC = () => {
                     <a href="https://genlayer.com" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>GenLayer</a>
                     {' '}·{' '}
                     <a href="https://layerzero.network" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>LayerZero</a>
+                    {' '}·{' '}
+                    <a href="https://xmtp.org" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>XMTP</a>
+                    {' '}·{' '}
+                    <a href="https://moonpay.com" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>MoonPay</a>
                 </span>
             </footer>
 

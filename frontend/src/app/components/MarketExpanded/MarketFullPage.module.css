@@ -523,9 +523,33 @@
     line-height: 1.5;
 }
 
+/* Bottom section: chat + panels aligned under the main grid */
+.bottomSection {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+}
+
+.chatColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.panelsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .container {
+        grid-template-columns: 1fr;
+    }
+
+    .bottomSection {
         grid-template-columns: 1fr;
     }
 

@@ -12,7 +12,7 @@
  * It joins the group chat for each market and posts structured update messages.
  */
 
-import { Client, type Signer } from '@xmtp/node-sdk';
+import { Client, type Signer, type Group, IdentifierKind } from '@xmtp/node-sdk';
 import { ethers } from 'ethers';
 import crypto from 'crypto';
 
@@ -32,10 +32,19 @@ async function getBotClient(): Promise<Client> {
   const wallet = new ethers.Wallet(privateKey);
 
   const signer: Signer = {
-    getAddress: async () => wallet.address as `0x${string}`,
-    signMessage: async (message: string | Uint8Array) => {
-      const text = typeof message === 'string' ? message : Buffer.from(message).toString('utf8');
-      return (await wallet.signMessage(text)) as `0x${string}`;
+    type: 'EOA',
+    getIdentifier: () => ({
+      identifier: wallet.address.toLowerCase(),
+      identifierKind: IdentifierKind.Ethereum,
+    }),
+    signMessage: async (message: string): Promise<Uint8Array> => {
+      const sig = await wallet.signMessage(message);
+      const hex = sig.startsWith('0x') ? sig.slice(2) : sig;
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+      }
+      return bytes;
     },
   };
 
@@ -60,13 +69,14 @@ async function getMarketGroup(client: Client, marketId: string, marketTitle: str
   await client.conversations.sync();
   const all = await client.conversations.list();
 
-  const existing = all.find((c) => c.name === `gnothi:market:${marketId}`);
-  if (existing) return existing;
+  const targetName = `gnothi:market:${marketId}`;
+  const existing = all.find((c) => 'name' in c && (c as unknown as Group).name === targetName);
+  if (existing) return existing as unknown as Group;
 
   return await client.conversations.newGroup([], {
-    name: `gnothi:market:${marketId}`,
-    description: marketTitle,
-  });
+    groupName: targetName,
+    groupDescription: marketTitle,
+  }) as unknown as Group;
 }
 
 /**

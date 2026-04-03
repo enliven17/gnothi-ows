@@ -13,6 +13,8 @@ import CopyIcon from '../Shared/CopyIcon';
 import ResolutionRules from '../Shared/ResolutionRules';
 import AIConsole from '../AIConsole/AIConsole';
 import MarketChat from '../MarketChat/MarketChat';
+import GroupMarketPanel from '../GroupMarket/GroupMarketPanel';
+import OWSWalletPanel from '../OWSWallet/OWSWalletPanel';
 
 interface MarketFullPageProps {
     onBack: () => void;
@@ -374,13 +376,23 @@ const MarketFullPage: React.FC<MarketFullPageProps> = ({
                 {isActive && renderActiveMarketSidebar()}
             </div>
 
-            {/* Market Group Chat — always visible below the main layout */}
+            {/* Market Chat + OWS + Group Market — aligned under the main grid */}
             {market && (
-                <div style={{ marginTop: '32px' }}>
-                    <MarketChat
-                        marketId={market.contractId ?? String(market.id ?? '')}
-                        marketTitle={marketTitle}
-                    />
+                <div className={styles.bottomSection}>
+                    <div className={styles.chatColumn}>
+                        <MarketChat
+                            marketId={market.contractId ?? String(market.id ?? '')}
+                            marketTitle={marketTitle}
+                        />
+                    </div>
+                    <div className={styles.panelsColumn}>
+                        <OWSWalletPanel />
+                        {process.env.NEXT_PUBLIC_GROUP_MARKET_ADDRESS && (
+                            <GroupMarketPanel
+                                groupMarketAddress={process.env.NEXT_PUBLIC_GROUP_MARKET_ADDRESS as `0x${string}`}
+                            />
+                        )}
+                    </div>
                 </div>
             )}
         </div>

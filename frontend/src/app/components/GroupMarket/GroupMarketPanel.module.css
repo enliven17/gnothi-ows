@@ -1,0 +1,138 @@
+.panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-maple-mono, monospace);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: #7c3aed;
+  color: #fff;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+}
+
+.members {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.progress {
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: #7c3aed;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.myShare {
+  font-size: 12px;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.depositRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input {
+  width: 80px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+
+.input:focus { border-color: #7c3aed; }
+
+.unit {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.btn {
+  padding: 8px 14px;
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn:hover:not(:disabled) { background: #1e293b; }
+.btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+.btnPrimary {
+  background: #7c3aed;
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+}
+.btnPrimary:hover:not(:disabled) { background: #6d28d9; }
+
+.btnSuccess {
+  background: #059669;
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+}
+.btnSuccess:hover:not(:disabled) { background: #047857; }
+
+.status {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  padding: 8px;
+}
+
+.loading {
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 16px;
+  text-align: center;
+  font-family: var(--font-maple-mono, monospace);
+}

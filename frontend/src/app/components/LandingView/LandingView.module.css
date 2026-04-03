@@ -310,6 +310,12 @@
     gap: 24px;
 }
 
+.typeGrid4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
 .typeCard {
     display: flex;
     flex-direction: column;

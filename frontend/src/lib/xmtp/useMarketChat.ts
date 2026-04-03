@@ -10,7 +10,7 @@ import {
   loadMarketMessages,
   streamMarketMessages,
 } from './marketChat';
-import type { Conversation } from '@xmtp/browser-sdk';
+import type { Group } from '@xmtp/browser-sdk';
 
 export interface ChatMessage {
   id: string;
@@ -26,6 +26,8 @@ export interface UseMarketChatResult {
   isInitializing: boolean;
   isConnected: boolean;
   error: string | null;
+  join: () => void;
+  hasJoined: boolean;
 }
 
 export function useMarketChat(
@@ -38,12 +40,24 @@ export function useMarketChat(
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const groupRef = useRef<Conversation | null>(null);
+  const [joinCount, setJoinCount] = useState(0);
+  const groupRef = useRef<Group | null>(null);
   const xmtpInboxIdRef = useRef<string | null>(null);
   const stopStreamRef = useRef<(() => void) | null>(null);
 
+  const hasJoined = joinCount > 0;
+
+  const join = useCallback(() => {
+    setError(null);
+    groupRef.current = null;
+    stopStreamRef.current?.();
+    stopStreamRef.current = null;
+    setMessages([]);
+    setJoinCount((c) => c + 1);
+  }, []);
+
   useEffect(() => {
-    if (!walletAddress || !isConnected || !walletClient) return;
+    if (!walletAddress || !isConnected || !walletClient || joinCount === 0) return;
     let cancelled = false;
 
     const init = async () => {
@@ -61,7 +75,7 @@ export function useMarketChat(
         );
         if (cancelled) return;
 
-        xmtpInboxIdRef.current = xmtpClient.inboxId;
+        xmtpInboxIdRef.current = xmtpClient.inboxId ?? null;
 
         const group = await getOrCreateMarketGroup(
           xmtpClient,
@@ -100,7 +114,8 @@ export function useMarketChat(
       } catch (err) {
         if (!cancelled) {
           console.error('[useMarketChat] init error:', err);
-          setError('XMTP bağlantısı kurulamadı. Cüzdanınızı kontrol edin.');
+          const msg = err instanceof Error ? err.message : String(err);
+          setError(`XMTP bağlantısı kurulamadı: ${msg}`);
         }
       } finally {
         if (!cancelled) setIsInitializing(false);
@@ -114,7 +129,7 @@ export function useMarketChat(
       stopStreamRef.current?.();
       stopStreamRef.current = null;
     };
-  }, [walletAddress, isConnected, walletClient, marketId, marketTitle]);
+  }, [walletAddress, isConnected, walletClient, marketId, marketTitle, joinCount]);
 
   const send = useCallback(async (text: string) => {
     if (!groupRef.current) throw new Error('Chat not initialized');
@@ -127,5 +142,7 @@ export function useMarketChat(
     isInitializing,
     isConnected: !!groupRef.current,
     error,
+    join,
+    hasJoined,
   };
 }

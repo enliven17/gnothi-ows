@@ -100,3 +100,14 @@
 * [SCEM Payout](10-diagrams.md#5-scem-payout-distribution)
 * [Component Hierarchy](10-diagrams.md#6-component-interaction-diagram)
 * [Data Flow](10-diagrams.md#7-data-flow-diagrams)
+
+## The Commons (Track 04)
+
+* [Overview](11-commons.md)
+  * [XMTP Group Chat](11-commons.md#1-xmtp-group-chat)
+  * [MarketBot Agent](11-commons.md#2-marketbot--xmtp-notification-agent)
+  * [MoonPay Onramp](11-commons.md#3-moonpay-usdc-onramp)
+  * [Group Treasury](11-commons.md#4-group-treasury-groupmarketsol)
+  * [OWS Wallet API](11-commons.md#5-ows-wallet-api)
+  * [Deployed Addresses](11-commons.md#deployed-addresses-base-sepolia)
+  * [Track 04 Compliance](11-commons.md#track-04-compliance-checklist)

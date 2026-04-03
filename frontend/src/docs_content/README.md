@@ -24,6 +24,12 @@ Welcome to the Gnothi documentation. This guide covers everything from basic con
 | [SCEM Payout Mechanism](./05-scem.md) | Mathematical foundation of fair payout distribution |
 | [AI Console](./06-ai-console.md) | Real-time validator transparency feature |
 
+### The Commons (Track 04)
+
+| Document | Description |
+|----------|-------------|
+| [The Commons](./11-commons.md) | XMTP group chat, MarketBot, MoonPay onramp, GroupMarket treasury |
+
 ### Operations
 
 | Document | Description |
@@ -92,6 +98,10 @@ Gnothi is a **cross-chain prediction market protocol** that uses AI consensus to
 2. **Cross-Chain Architecture**: Base ↔ GenLayer communication via LayerZero
 3. **SCEM-Weighted Payouts**: Mathematically optimal incentive mechanism
 4. **AI Transparency Console**: Real-time visibility into validator decisions
+5. **XMTP Group Chat**: Per-market group conversations powered by XMTP v3
+6. **Group Treasury**: Pool USDC on-chain and bet collectively via GroupMarket.sol
+7. **MoonPay Onramp**: Buy USDC with a card — no CEX, no bridge, no friction
+8. **MarketBot Agent**: XMTP bot pushes resolution events into every market chat
 
 ---
 
@@ -153,7 +163,9 @@ Start here:
          │   Frontend (Next.js)  │
          │   • Market UI         │
          │   • AI Console        │
-         │   • Wallet Integration│
+         │   • XMTP Group Chat   │
+         │   • MoonPay Onramp    │
+         │   • Group Treasury    │
          └───────────────────────┘
 ```
 
@@ -164,9 +176,14 @@ Start here:
 | **Smart Contracts** | Solidity 0.8.22 | EVM logic (Base Sepolia) |
 | **AI Oracle** | Python (GenLayer) | Market resolution |
 | **Cross-Chain** | LayerZero V2 | Base ↔ GenLayer messaging |
-| **Frontend** | Next.js 15 + TypeScript | User interface |
+| **Frontend** | Next.js 16 + TypeScript | User interface |
 | **Scoring** | SCEM Library | Fair payout calculation |
 | **Bridge** | Node.js + Express | Event relay + HTTP API |
+| **Group Chat** | XMTP v3 browser-sdk | Per-market group conversations |
+| **Notifications** | XMTP Agent (MarketBot) | Automated event notifications |
+| **Onramp** | MoonPay signed-URL | Fiat → USDC without CEX |
+| **Group Capital** | GroupMarket.sol | Shared treasury + collective bets |
+| **Wallet API** | OWS-compatible routes | Agent skill integration |
 
 ---
 
@@ -245,7 +262,8 @@ MIT License - see [LICENSE](../LICENSE) for details.
 |------|---------|---------|
 | 2025-04-01 | 1.0.0 | Initial documentation release |
 | 2025-04-01 | 1.0.1 | Added troubleshooting guide |
+| 2026-04-03 | 2.0.0 | The Commons integration: XMTP group chat, MarketBot, MoonPay, GroupMarket.sol |
 
 ---
 
-**Last Updated**: April 1, 2026
+**Last Updated**: April 3, 2026

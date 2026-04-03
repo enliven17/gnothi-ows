@@ -13,6 +13,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .owsBadge {
@@ -25,6 +27,17 @@
   letter-spacing: 0.08em;
 }
 
+.moonpayBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: #7c3aed;
+  color: #fff;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
 .address {
   font-size: 13px;
   color: #374151;
@@ -34,11 +47,12 @@
 .loading {
   font-size: 12px;
   color: #9ca3af;
+  padding: 8px 0;
 }
 
 .stats {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .stat {
@@ -47,6 +61,7 @@
   gap: 2px;
   flex: 1;
   background: #f9fafb;
+  border: 1px solid #f3f4f6;
   border-radius: 8px;
   padding: 8px 10px;
 }
@@ -76,6 +91,10 @@
   font-family: inherit;
   cursor: pointer;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .buyBtn:hover:not(:disabled) {

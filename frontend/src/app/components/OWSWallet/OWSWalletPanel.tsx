@@ -54,6 +54,9 @@ export default function OWSWalletPanel() {
       <div className={styles.header}>
         <span className={styles.owsBadge}>OWS</span>
         <span className={styles.address}>{short}</span>
+        {isMoonPayConfigured() && (
+          <span className={styles.moonpayBadge}>MoonPay</span>
+        )}
       </div>
 
       {loading ? (

@@ -4,27 +4,28 @@
 
 export const formatVolume = (num: number): string => {
     if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M USDL';
+        return (num / 1000000).toFixed(1) + 'M USDC';
     }
     if (num >= 10000) {
-        return (num / 1000).toFixed(0) + 'k USDL';
+        return (num / 1000).toFixed(0) + 'k USDC';
     }
-    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDL';
+    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDC';
 };
 
 // Alternative compact format with localeString for exact amounts
-export const formatUsdlCompact = (num: number): string => {
+export const formatUsdcCompact = (num: number): string => {
     if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M USDL';
+        return (num / 1000000).toFixed(1) + 'M USDC';
     }
     if (num >= 10000) {
-        return (num / 1000).toFixed(0) + 'k USDL';
+        return (num / 1000).toFixed(0) + 'k USDC';
     }
-    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDL';
+    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDC';
 };
 
-export const formatUsdlAmount = (num: number): string => {
-    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDL';
+export const formatUsdlCompact = formatUsdcCompact; // backward compat alias
+export const formatUsdcAmount = (num: number): string => {
+    return num.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' USDC';
 };
 
 export const formatAddress = (addr?: string): string => {
@@ -64,9 +65,11 @@ export const formatDeadlineDateTime = (deadlineSeconds: number): string => {
     });
 };
 
-export const formatExactUsdl = (num: number): string => {
-    return `${num.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDL`;
+export const formatUsdlAmount = formatUsdcAmount; // backward compat alias
+export const formatExactUsdc = (num: number): string => {
+    return `${num.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDC`;
 };
+export const formatExactUsdl = formatExactUsdc; // backward compat alias
 
 export const formatResolutionDate = (deadline?: number | string): string | null => {
     if (deadline === undefined || deadline === null) return null;

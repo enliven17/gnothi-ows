@@ -22,7 +22,7 @@ function isBot(inboxId: string): boolean {
 
 export default function MarketChat({ marketId, marketTitle }: MarketChatProps) {
   const { isConnected: walletConnected, walletAddress, connect } = useWallet();
-  const { messages, send, isInitializing, isConnected: chatConnected, error } = useMarketChat(
+  const { messages, send, isInitializing, isConnected: chatConnected, error, join, hasJoined } = useMarketChat(
     marketId,
     marketTitle
   );
@@ -85,6 +85,25 @@ export default function MarketChat({ marketId, marketTitle }: MarketChatProps) {
     );
   }
 
+  if (!hasJoined) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <span className={styles.headerIcon}>💬</span>
+          <span className={styles.headerTitle}>Market Chat</span>
+          <span className={styles.badge}>XMTP</span>
+        </div>
+        <div className={styles.gate}>
+          <p>Join the conversation for this market.</p>
+          <p className={styles.hint}>Your wallet will sign once to connect to XMTP.</p>
+          <button className={styles.connectBtn} onClick={join}>
+            Join Chat
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (isInitializing) {
     return (
       <div className={styles.container}>
@@ -96,7 +115,7 @@ export default function MarketChat({ marketId, marketTitle }: MarketChatProps) {
         <div className={styles.gate}>
           <div className={styles.spinner} />
           <p>Connecting to XMTP…</p>
-          <p className={styles.hint}>You may be asked to sign a message in your wallet.</p>
+          <p className={styles.hint}>Check your wallet for a signature request.</p>
         </div>
       </div>
     );
@@ -111,6 +130,9 @@ export default function MarketChat({ marketId, marketTitle }: MarketChatProps) {
         </div>
         <div className={styles.gate}>
           <p className={styles.error}>{error}</p>
+          <button className={styles.connectBtn} onClick={join} style={{ marginTop: '12px' }}>
+            Retry
+          </button>
         </div>
       </div>
     );

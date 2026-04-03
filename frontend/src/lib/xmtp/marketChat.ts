@@ -1,42 +1,39 @@
 'use client';
 
-import type { Client, Conversation } from '@xmtp/browser-sdk';
+import type { Client, Group } from '@xmtp/browser-sdk';
 
 // Market group conversations are stored by marketId
-const groupCache = new Map<string, Conversation>();
+const groupCache = new Map<string, Group>();
 
 /**
  * Get or create the XMTP group conversation for a prediction market.
- * The group is identified by the market contract address.
  */
 export async function getOrCreateMarketGroup(
   client: Client,
   marketId: string,
   marketTitle: string
-): Promise<Conversation> {
+): Promise<Group> {
   if (groupCache.has(marketId)) {
     return groupCache.get(marketId)!;
   }
 
-  // Sync existing conversations first
   await client.conversations.sync();
   const existing = await client.conversations.list();
 
-  // Look for an existing group with this marketId in the group name
-  const found = existing.find(
-    (c) => c.name === `gnothi:market:${marketId}`
-  );
+  const targetName = `gnothi:market:${marketId}`;
+  // Filter only Group conversations (have 'name' property, unlike DMs)
+  const found = existing.find((c) => 'name' in c && (c as unknown as Group).name === targetName);
 
   if (found) {
-    groupCache.set(marketId, found);
-    return found;
+    const group = found as unknown as Group;
+    groupCache.set(marketId, group);
+    return group;
   }
 
   // Create new group conversation for this market
   const group = await client.conversations.newGroup([], {
-    name: `gnothi:market:${marketId}`,
+    name: targetName,
     description: marketTitle,
-    imageUrl: `https://api.dicebear.com/7.x/shapes/svg?seed=${marketId}`,
   });
 
   groupCache.set(marketId, group);
@@ -47,7 +44,7 @@ export async function getOrCreateMarketGroup(
  * Send a message to the market group chat.
  */
 export async function sendMarketMessage(
-  group: Conversation,
+  group: Group,
   text: string
 ): Promise<void> {
   await group.send(text);
@@ -58,45 +55,40 @@ export async function sendMarketMessage(
  * Returns an unsubscribe function.
  */
 export function streamMarketMessages(
-  group: Conversation,
+  group: Group,
   onMessage: (msg: { senderInboxId: string; content: string; sentAt: Date }) => void
 ): () => void {
   let stopped = false;
 
   (async () => {
     try {
-      await group.stream(async (error, message) => {
-        if (stopped) return;
-        if (error) {
-          console.error('[XMTP] stream error:', error);
-          return;
-        }
-        if (!message) return;
+      const stream = await group.stream();
+      for await (const message of stream) {
+        if (stopped) break;
+        if (!message) continue;
         onMessage({
           senderInboxId: message.senderInboxId,
           content: typeof message.content === 'string' ? message.content : '',
           sentAt: new Date(message.sentAtNs ? Number(message.sentAtNs) / 1_000_000 : Date.now()),
         });
-      });
+      }
     } catch (err) {
       if (!stopped) console.error('[XMTP] stream failed:', err);
     }
   })();
 
-  return () => {
-    stopped = true;
-  };
+  return () => { stopped = true; };
 }
 
 /**
  * Load recent message history from a market group.
  */
 export async function loadMarketMessages(
-  group: Conversation,
+  group: Group,
   limit = 50
 ): Promise<Array<{ senderInboxId: string; content: string; sentAt: Date }>> {
   await group.sync();
-  const messages = await group.messages({ limit });
+  const messages = await group.messages({ limit: BigInt(limit) });
 
   return messages
     .filter((m) => typeof m.content === 'string' && m.content.length > 0)

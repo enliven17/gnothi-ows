@@ -60,9 +60,25 @@ const PrivyWalletContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 
+    // If no Privy app ID is configured, render a stub provider so the build doesn't break
+    if (!appId) {
+        const stubValue: WalletContextValue = {
+            walletAddress: null,
+            isConnected: false,
+            isConnecting: false,
+            connect: async () => {},
+            disconnect: async () => {},
+        };
+        return (
+            <QueryClientProvider client={queryClient}>
+                <WalletContext.Provider value={stubValue}>{children}</WalletContext.Provider>
+            </QueryClientProvider>
+        );
+    }
+
     return (
         <PrivyProvider
-            appId={appId ?? ''}
+            appId={appId}
             config={{
                 appearance: {
                     theme: 'light',

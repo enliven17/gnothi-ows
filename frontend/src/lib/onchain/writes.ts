@@ -135,41 +135,6 @@ export async function approveUsdlUnlimited(spenderAddress: `0x${string}`): Promi
     });
 }
 
-export async function dripUsdl(): Promise<void> {
-    // Ensure we're on the correct chain
-    await switchChain(wagmiConfig, { chainId: baseSepolia.id });
-
-    await writeContract(wagmiConfig, {
-        chainId: baseSepolia.id,
-        address: USDL_ADDRESS as `0x${string}`,
-        abi: MOCK_USDL_ABI,
-        functionName: 'drip',
-        args: []
-    });
-}
-
-export async function getUsdlDripStatus(userAddress: `0x${string}`): Promise<UsdlDripStatus> {
-    const publicClient = getPublicClient();
-    const [remainingAllowance, nextResetTime] = await Promise.all([
-        publicClient.readContract({
-            address: USDL_ADDRESS as `0x${string}`,
-            abi: MOCK_USDL_ABI,
-            functionName: 'remainingMintAllowance',
-            args: [userAddress]
-        }),
-        publicClient.readContract({
-            address: USDL_ADDRESS as `0x${string}`,
-            abi: MOCK_USDL_ABI,
-            functionName: 'nextResetTime',
-            args: [userAddress]
-        })
-    ]);
-
-    return {
-        remainingAllowance: remainingAllowance as bigint,
-        nextResetTime: nextResetTime as bigint
-    };
-}
 
 export async function isLegitBet(betAddress: `0x${string}`): Promise<boolean> {
     if (!isFactoryConfigured()) {
