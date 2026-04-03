@@ -91,7 +91,7 @@ export async function initOWSVault(callerKey: string, ownerKey?: string): Promis
   } catch {
     try {
       sdk.createPolicy(
-        JSON.stringify({ id: OWS_POLICY_ID, name: 'Relay Chain Allowlist', version: '1.0', wallets: [OWS_RELAY_WALLET, OWS_OWNER_WALLET], chains: ALLOWED_CHAINS }),
+        JSON.stringify({ id: OWS_POLICY_ID, name: 'Relay Chain Allowlist', version: 1, wallets: [OWS_RELAY_WALLET, OWS_OWNER_WALLET], chains: ALLOWED_CHAINS }),
         VAULT_PATH,
       );
       console.log(`[OWS] Policy: ${OWS_POLICY_ID} registered (chains: ${ALLOWED_CHAINS.join(', ')})`);
@@ -166,20 +166,22 @@ export class OWSEthersWallet extends ethers.AbstractSigner {
   async signTransaction(tx: ethers.TransactionRequest): Promise<string> {
     const sdk = _ows;
     if (!sdk) return this._fallback.signTransaction(tx);
+
+    // Always populate and strip 'from'/'kzg' — both OWS and ethers fallback require this
+    const populated = await this._fallback.populateTransaction(tx);
+    const { from: _from, kzg: _kzg, ...txParams } = populated as any;
+
     try {
-      const populated = await this._fallback.populateTransaction(tx);
-      // OWS does not accept 'from' or 'kzg' on unsigned transactions — strip them
-      const { from: _from, kzg: _kzg, ...txParams } = populated as any;
-      const unsigned  = ethers.Transaction.from(txParams).unsignedSerialized;
+      const unsigned = ethers.Transaction.from(txParams).unsignedSerialized;
       const result = sdk.signTransaction(this._owsName, 'evm', unsigned.slice(2), undefined, 0, VAULT_PATH);
-      const ethersTx = ethers.Transaction.from(populated);
+      const ethersTx = ethers.Transaction.from(txParams);
       ethersTx.signature = ethers.Signature.from(
         result.signature.startsWith('0x') ? result.signature : `0x${result.signature}`
       );
       return ethersTx.serialized;
     } catch (e: any) {
       console.warn(`[OWS] signTransaction failed (${this._owsName}), ethers fallback: ${e?.message}`);
-      return this._fallback.signTransaction(tx);
+      return this._fallback.signTransaction(txParams);
     }
   }
 
