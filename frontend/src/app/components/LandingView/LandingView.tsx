@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import styles from './LandingView.module.css';
-import ArchitectureDiagram from './ArchitectureDiagram';
+import ArchitectureFlow from './ArchitectureFlow';
 import AgenticEconomyCarousel from './AgenticEconomyCarousel';
 
 const fadeUp = {
@@ -127,8 +127,8 @@ const LandingView: React.FC = () => {
             {/* ── Autonomous Multi-Agent Systems (Agentic Economy Slider) ── */}
             <AgenticEconomyCarousel />
 
-            {/* ── Architecture Flow (Detailed How it Works) ── */}
-            <ArchitectureDiagram />
+            {/* ── Detailed Flow (Architecture) ── */}
+            <ArchitectureFlow />
 
             {/* ── Market types ── */}
             <section className={styles.types}>

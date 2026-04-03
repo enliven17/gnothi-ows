@@ -1,0 +1,167 @@
+.container {
+    padding: 120px 24px;
+    background: var(--background);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.title {
+    font-size: clamp(32px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #666;
+    max-width: 700px;
+    margin: 16px auto 0;
+    line-height: 1.6;
+}
+
+.diagramContainer {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 40px;
+    padding: 80px 40px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.03);
+    margin-bottom: 80px;
+    overflow-x: auto;
+    position: relative;
+}
+
+.zone {
+    position: absolute;
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px dashed rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.zoneLabel {
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    background: white;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #bbb;
+    border: 1.5px solid #eee;
+}
+
+.flowSvg {
+    width: 100%;
+    height: auto;
+    min-width: 1000px;
+    display: block;
+}
+
+.nodeRect {
+    fill: white;
+    stroke: var(--card-border);
+    stroke-width: 1.5;
+    rx: 20;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.03));
+}
+
+.nodeTitle {
+    font-size: 14px;
+    font-weight: 800;
+    fill: #111;
+    letter-spacing: -0.2px;
+}
+
+.nodeType {
+    font-size: 10px;
+    font-weight: 600;
+    fill: #999;
+    text-transform: uppercase;
+}
+
+.pathLine {
+    stroke: #f0f0f0;
+    stroke-width: 3;
+    fill: none;
+}
+
+.pathAnimated {
+    stroke: var(--primary);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(245, 175, 175, 0.4));
+}
+
+/* Feature Grid Below Diagram */
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+.infoCard {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    background: white;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+}
+
+.infoTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.infoIcon {
+    color: var(--primary);
+}
+
+.infoText {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+}
