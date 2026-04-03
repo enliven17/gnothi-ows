@@ -16,6 +16,10 @@ const config: HardhatUserConfig = {
       evmVersion: "cancun"
     },
   },
+  zksolc: {
+    version: "1.5.3",
+    settings: {},
+  },
   networks: {
     hardhat: {
       chainId: 31337,
@@ -24,14 +28,15 @@ const config: HardhatUserConfig = {
       url: process.env.ZKSYNC_ERA_RPC_URL || "https://mainnet.era.zksync.io",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 324,
-      // zksync: true,
+      zksync: true,
       verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
     },
     zkSyncSepoliaTestnet: {
       url: process.env.ZKSYNC_SEPOLIA_RPC_URL || "https://sepolia.era.zksync.dev",
+      ethNetwork: "sepolia",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 300,
-      // zksync: true,
+      zksync: true,
       verifyURL: 'https://explorer.sepolia.era.zksync.dev/contract_verification',
     },
     baseMainnet: {

@@ -27,10 +27,11 @@ async function main() {
 
   // Check current bridge receiver
   const currentBridgeReceiver = await factory.bridgeReceiver();
-  console.log(`\nCurrent bridge receiver: ${currentBridgeReceiver}`);
+  console.log(`Current bridge receiver: ${currentBridgeReceiver}`);
+  console.log(`Target bridge receiver:  ${bridgeReceiverAddress}`);
 
   if (currentBridgeReceiver.toLowerCase() === bridgeReceiverAddress.toLowerCase()) {
-    console.log("\n Bridge receiver already set to this address!");
+    console.log("\n✓ Bridge receiver is already set correctly.");
     return;
   }
 

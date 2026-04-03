@@ -15,7 +15,7 @@
  *   NEW_CALLER                - Wallet to grant CALLER_ROLE (defaults to PRIVATE_KEY derived address)
  */
 
-import { ethers } from "hardhat";
+import { ethers } from "ethers";
 import dotenv from "dotenv";
 
 dotenv.config();

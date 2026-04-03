@@ -54,6 +54,7 @@ export class EvmToGenLayerRelay {
   private factoryContract: ethers.Contract;
   private genLayerClient: any;
   private processedEvents: Set<string>;
+  private currentlyProcessing: Set<string>;
   private lastBlock: number;
   private pollInterval: NodeJS.Timeout | null;
 
@@ -80,6 +81,7 @@ export class EvmToGenLayerRelay {
     });
 
     this.processedEvents = new Set<string>();
+    this.currentlyProcessing = new Set<string>();
     this.lastBlock = 0;
     this.pollInterval = null;
   }
@@ -167,8 +169,8 @@ export class EvmToGenLayerRelay {
         receipt = await this.genLayerClient.waitForTransactionReceipt({
           hash,
           status: "ACCEPTED",
-          retries: 60,
-          interval: 3000,
+          retries: 240, // Increase to 20 minutes (240 * 5s)
+          interval: 5000,
         });
       } catch (waitErr: any) {
         // Fetch final tx status for diagnosis
@@ -176,11 +178,14 @@ export class EvmToGenLayerRelay {
         try {
           const tx = await this.genLayerClient.getTransactionByHash({ hash });
           finalStatus = tx?.status ?? "unknown";
+          console.error(`[EVM→GL] waitErr: ${waitErr.message}`);
           console.error(`[EVM→GL] TX final status: ${finalStatus}`);
           if (finalStatus === "LEADER_ERROR" || finalStatus === "UNDETERMINED") {
             console.error(`[EVM→GL] GenLayer consensus failed — oracle will retry on next resolve() call`);
           }
-        } catch {}
+        } catch (diagErr) {
+          console.error(`[EVM→GL] Failed to fetch final status:`, diagErr);
+        }
         throw waitErr;
       }
 
@@ -226,38 +231,39 @@ export class EvmToGenLayerRelay {
       for (const event of events) {
         const eventId = `${event.transactionHash}-${event.index}`;
 
-        if (this.processedEvents.has(eventId)) {
+        if (this.processedEvents.has(eventId) || this.currentlyProcessing.has(eventId)) {
           continue;
         }
 
         const log = event as ethers.EventLog;
         const [betContract, creator, resolutionType, title, sideAName, sideBName, resolutionData, eventTimestamp] = log.args;
 
-        // Mark as processed BEFORE deploying (deployment is slow)
-        this.processedEvents.add(eventId);
-
-        const decoded = decodeResolutionData(resolutionData);
         console.log(`\n[EVM→GL] *** ResolutionRequested ***`);
         console.log(`  Bet: ${betContract}`);
-        console.log(`  Creator: ${creator}`);
         console.log(`  Type: ${RESOLUTION_TYPES[Number(resolutionType)]} (${resolutionType})`);
-        console.log(`  Title: ${title}`);
-        console.log(`  Sides: "${sideAName}" vs "${sideBName}"`);
-        console.log(`  Data: ${decoded ? `[${decoded.join(", ")}]` : "(empty)"}`);
         console.log(`  TX: ${event.transactionHash}`);
 
         // Notify XMTP group chat that resolution started
         await notifyResolutionStarted(betContract as string, title as string);
 
+        // Mark as processing
+        this.currentlyProcessing.add(eventId);
+
         // Deploy oracle to GenLayer
-        await this.deployOracle(
+        this.deployOracle(
           betContract as string,
           Number(resolutionType),
           title as string,
           sideAName as string,
           sideBName as string,
           resolutionData as string
-        );
+        ).then(success => {
+          if (success) {
+            this.processedEvents.add(eventId);
+          }
+        }).finally(() => {
+          this.currentlyProcessing.delete(eventId);
+        });
       }
 
       this.lastBlock = currentBlock;

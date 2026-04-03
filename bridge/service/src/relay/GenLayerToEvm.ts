@@ -29,6 +29,9 @@ const BRIDGE_FORWARDER_ABI = [
   "function callRemoteArbitrary(bytes32 txHash, uint32 dstEid, bytes data, bytes options) external payable",
   "function quoteCallRemoteArbitrary(uint32 dstEid, bytes data, bytes options) external view returns (uint256 nativeFee, uint256 lzTokenFee)",
   "function isHashUsed(bytes32 txHash) external view returns (bool)",
+  "function endpoint() external view returns (address)",
+  "function CALLER_ROLE() external view returns (bytes32)",
+  "function hasRole(bytes32 role, address account) external view returns (bool)",
 ];
 
 export class GenLayerToEvmRelay {
@@ -38,6 +41,7 @@ export class GenLayerToEvmRelay {
   private genLayerClient: any;
   private usedHashes: Set<string>;
   private initialized: boolean;
+  private forwarderChecked: boolean;
 
   constructor() {
     this.provider = new ethers.JsonRpcProvider(getForwarderNetworkRpcUrl());
@@ -64,6 +68,49 @@ export class GenLayerToEvmRelay {
 
     this.usedHashes = new Set<string>();
     this.initialized = false;
+    this.forwarderChecked = false;
+  }
+
+  private async ensureForwarderReady(): Promise<boolean> {
+    if (this.forwarderChecked) {
+      return true;
+    }
+
+    const forwarderAddress = String(this.bridgeForwarder.target);
+    const code = await this.provider.getCode(forwarderAddress);
+    if (code === "0x") {
+      console.error(`[GL->EVM] FATAL: No contract deployed at BRIDGE_FORWARDER_ADDRESS ${forwarderAddress}`);
+      console.error("          Update bridge/service/.env and bridge/smart-contracts/.env to the deployed BridgeForwarder address.");
+      return false;
+    }
+
+    try {
+      const endpointAddress = await this.bridgeForwarder.endpoint();
+      const endpointCode = await this.provider.getCode(endpointAddress);
+      if (endpointCode === "0x") {
+        console.error(`[GL->EVM] FATAL: BridgeForwarder ${forwarderAddress} points to an endpoint with no code: ${endpointAddress}`);
+        console.error("          Re-deploy BridgeForwarder with the correct LayerZero endpoint for zkSync Sepolia.");
+        return false;
+      }
+    } catch (endpointErr: any) {
+      console.error(`[GL->EVM] FATAL: Could not verify BridgeForwarder endpoint: ${endpointErr.message}`);
+      return false;
+    }
+
+    try {
+      const callerRole = await this.bridgeForwarder.CALLER_ROLE();
+      const hasCallerRole = await this.bridgeForwarder.hasRole(callerRole, this.wallet.address);
+      if (!hasCallerRole) {
+        console.error(`[GL->EVM] FATAL: Relay wallet ${this.wallet.address} does not have CALLER_ROLE on ${forwarderAddress}`);
+        console.error("          Grant CALLER_ROLE with bridge/smart-contracts/scripts/set-caller.ts or switch PRIVATE_KEY to the authorized relay wallet.");
+        return false;
+      }
+    } catch (roleErr: any) {
+      console.warn(`[GL->EVM] Warning: Could not verify CALLER_ROLE on ${forwarderAddress}: ${roleErr.message}`);
+    }
+
+    this.forwarderChecked = true;
+    return true;
   }
 
   private async getPendingMessages(): Promise<string[]> {
@@ -94,9 +141,19 @@ export class GenLayerToEvmRelay {
       console.log(`[GL→EVM] Processing message ${hash}`);
 
       // Check if already relayed
-      const isUsed = await this.bridgeForwarder.isHashUsed(`0x${hash}`);
+      let isUsed = false;
+      try {
+        isUsed = await this.bridgeForwarder.isHashUsed(`0x${hash}`);
+      } catch (err: any) {
+        console.warn(`[GL→EVM] Warning: Could not check relay status for ${hash}. Proceeding with relay attempt anyway.`);
+        // Do NOT return — fall through and attempt relay.
+        // The contract will reject duplicate hashes on-chain.
+        isUsed = false;
+      }
+      
       if (isUsed) {
         console.log(`[GL→EVM] Message ${hash} already relayed, skipping`);
+        this.usedHashes.add(hash);
         return;
       }
 
@@ -132,16 +189,26 @@ export class GenLayerToEvmRelay {
 
       // Build LayerZero options
       const optionsHex = Options.newOptions()
-        .addExecutorLzReceiveOption(1_000_000, 0)
+        .addExecutorLzReceiveOption(200_000, 0)
         .toHex();
 
       // Get fee quote
       const dstEid = message.targetChainId; // Already LZ EID
-      const [nativeFee] = await this.bridgeForwarder.quoteCallRemoteArbitrary(
-        dstEid,
-        message.data,
-        optionsHex
-      );
+      let nativeFee: bigint;
+      try {
+        const quote = await this.bridgeForwarder.quoteCallRemoteArbitrary(
+          dstEid,
+          message.data,
+          optionsHex
+        );
+        nativeFee = quote[0];
+      } catch (quoteErr: any) {
+        console.error(`[GL→EVM] FATAL: Bridge quote failed for EID ${dstEid}.`);
+        console.error(`          This usually means the bridge address for this EID is not set on the BridgeForwarder contract.`);
+        console.error(`          BridgeForwarder: ${this.bridgeForwarder.target}`);
+        console.error(`          Error: ${quoteErr.message}`);
+        return;
+      }
 
       console.log(
         `[GL→EVM] Fee: ${ethers.formatEther(nativeFee)} ETH`
@@ -159,6 +226,7 @@ export class GenLayerToEvmRelay {
       console.log(`[GL→EVM] TX: ${tx.hash}`);
       const receipt = await tx.wait();
       console.log(`[GL→EVM] Confirmed in block ${receipt.blockNumber}`);
+      this.usedHashes.add(hash); // Mark as done only after confirmed on-chain
 
       // Notify XMTP group chat — resolution delivered onchain
       try {
@@ -183,6 +251,10 @@ export class GenLayerToEvmRelay {
     try {
       console.log("[GL→EVM] Starting sync...");
 
+      if (!(await this.ensureForwarderReady())) {
+        return;
+      }
+
       const hashes = await this.getPendingMessages();
 
       // On first run, log how many messages exist (don't skip — isHashUsed() handles deduplication)
@@ -194,7 +266,6 @@ export class GenLayerToEvmRelay {
       console.log(`[GL→EVM] Found ${hashes.length} pending messages`);
 
       for (const hash of hashes) {
-        this.usedHashes.add(hash);
         await this.relayMessage(hash);
       }
 

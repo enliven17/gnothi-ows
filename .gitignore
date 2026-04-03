@@ -53,8 +53,11 @@ trace
 
 # Hardhat
 artifacts/
+artifacts-zk/
 cache/
+cache-zk/
 deployments/
+deployments-zk/
 typechain-types/
 typechain/
 
