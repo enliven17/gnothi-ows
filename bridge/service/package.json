@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@layerzerolabs/lz-v2-utilities": "^3.0.61",
+    "@open-wallet-standard/core": "^1.2.0",
     "@supabase/supabase-js": "^2.100.1",
     "@xmtp/node-sdk": "^4.4.0",
     "dotenv": "^16.4.5",

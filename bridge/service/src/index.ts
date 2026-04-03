@@ -16,6 +16,7 @@ import { ResolutionAPI } from "./api/ResolutionAPI.js";
 import { LoopMarketScheduler } from "./resolution/LoopMarketScheduler.js";
 import { ExpiredMarketSweeper } from "./resolution/ExpiredMarketSweeper.js";
 import { StuckResolvingScanner } from "./resolution/StuckResolvingScanner.js";
+import { initOWSVault, isOWSAvailable } from "./ows/OWSVault.js";
 
 // Global references for graceful shutdown
 let resolutionQueue: ResolutionQueue | null = null;
@@ -24,6 +25,13 @@ let httpServer: any = null;
 
 async function main() {
   console.log("Starting Bridge Service\n");
+
+  // OWS Vault — import relay private key into encrypted vault (Linux/Railway only)
+  const callerKey = process.env.CALLER_PRIVATE_KEY ?? process.env.PRIVATE_KEY ?? '';
+  if (callerKey) {
+    await initOWSVault(callerKey);
+    console.log(`[OWS] Vault initialized — native SDK ${isOWSAvailable() ? 'active' : 'unavailable (ethers fallback)'}`);
+  }
 
   // GenLayer → EVM (polling)
   console.log("[GL→EVM] Initializing...");

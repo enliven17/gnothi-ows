@@ -1,30 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '../../../../lib/supabase';
 
 /**
- * OWS Credential endpoint.
+ * OWS Credential endpoint — prediction market reputation per wallet.
  *
- * Stores and retrieves prediction market reputation credentials
- * tied to a wallet address. Used for:
- * - Tracking prediction accuracy over time
- * - Gating access to premium markets
- * - Building on-chain reputation score
+ * Backed by Supabase table `ows_credentials`:
+ *   wallet_address TEXT PRIMARY KEY
+ *   total_markets  INT DEFAULT 0
+ *   correct_predictions INT DEFAULT 0
+ *   accuracy_rate  FLOAT DEFAULT 0
+ *   total_staked   TEXT DEFAULT '0'
+ *   updated_at     TIMESTAMPTZ DEFAULT NOW()
  *
- * Credentials are stored as JWT-style attestations signed by the
- * OWS wallet and verified on-chain via the GroupMarket contract.
+ * Falls back to zero-value stub when Supabase is not configured.
  */
 
 interface MarketCredential {
   walletAddress: string;
   totalMarkets: number;
   correctPredictions: number;
-  accuracyRate: number; // 0-100
-  totalStaked: string; // in USDC
+  accuracyRate: number;
+  totalStaked: string;
   issuedAt: number;
 }
 
 /**
  * GET /api/ows/credential?address=0x...
- * Return the prediction credential for a wallet.
  */
 export async function GET(req: NextRequest) {
   const address = req.nextUrl.searchParams.get('address');
@@ -32,8 +33,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'address is required' }, { status: 400 });
   }
 
-  // TODO: Query on-chain reputation contract or Supabase
-  // For now return a stub that the frontend can display
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('ows_credentials')
+      .select('*')
+      .eq('wallet_address', address.toLowerCase())
+      .maybeSingle();
+
+    if (error) {
+      console.error('[OWS] credential GET error:', error.message);
+    } else if (data) {
+      const credential: MarketCredential = {
+        walletAddress: data.wallet_address,
+        totalMarkets: data.total_markets ?? 0,
+        correctPredictions: data.correct_predictions ?? 0,
+        accuracyRate: data.accuracy_rate ?? 0,
+        totalStaked: data.total_staked ?? '0',
+        issuedAt: new Date(data.updated_at ?? Date.now()).getTime(),
+      };
+      return NextResponse.json({ credential, backend: 'supabase' });
+    }
+  }
+
+  // Stub (Supabase not configured or row not found yet)
   const credential: MarketCredential = {
     walletAddress: address,
     totalMarkets: 0,
@@ -42,15 +65,13 @@ export async function GET(req: NextRequest) {
     totalStaked: '0',
     issuedAt: Date.now(),
   };
-
-  return NextResponse.json({ credential });
+  return NextResponse.json({ credential, backend: 'stub' });
 }
 
 /**
  * POST /api/ows/credential
- * Issue or update a credential after market resolution.
- * Called by the bridge service when a market resolves.
- * Body: { walletAddress, marketId, won, staked }
+ * Called by the bridge service after market resolution.
+ * Body: { walletAddress, marketId, won: boolean, staked: string }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -61,13 +82,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'walletAddress and marketId are required' }, { status: 400 });
     }
 
-    // TODO: Update on-chain credential via OWS signed transaction
-    // For now log and return success
-    console.log('[OWS] Credential update:', { walletAddress, marketId, won, staked });
+    const supabase = getSupabase();
+    if (supabase) {
+      // Upsert — increment counters
+      const addr = walletAddress.toLowerCase();
+      const { data: existing } = await supabase
+        .from('ows_credentials')
+        .select('*')
+        .eq('wallet_address', addr)
+        .maybeSingle();
 
-    return NextResponse.json({ success: true });
+      const totalMarkets = (existing?.total_markets ?? 0) + 1;
+      const correctPredictions = (existing?.correct_predictions ?? 0) + (won ? 1 : 0);
+      const accuracyRate = totalMarkets > 0 ? (correctPredictions / totalMarkets) * 100 : 0;
+      const prevStaked = parseFloat(existing?.total_staked ?? '0');
+      const totalStaked = (prevStaked + parseFloat(staked ?? '0')).toFixed(2);
+
+      const { error } = await supabase
+        .from('ows_credentials')
+        .upsert({
+          wallet_address: addr,
+          total_markets: totalMarkets,
+          correct_predictions: correctPredictions,
+          accuracy_rate: accuracyRate,
+          total_staked: totalStaked,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'wallet_address' });
+
+      if (error) {
+        console.error('[OWS] credential upsert error:', error.message);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, totalMarkets, accuracyRate: accuracyRate.toFixed(1), backend: 'supabase' });
+    }
+
+    // No Supabase — log only
+    console.log('[OWS] Credential update (no-op, Supabase not configured):', { walletAddress, marketId, won, staked });
+    return NextResponse.json({ success: true, backend: 'stub' });
   } catch (err) {
-    console.error('[OWS] credential update error:', err);
+    console.error('[OWS] credential POST error:', err);
     return NextResponse.json({ error: 'Failed to update credential' }, { status: 500 });
   }
 }

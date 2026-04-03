@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Read(//c/Users/enliven/AppData/Local/Temp/claude/c--Users-enliven-Documents-GitHub-gnothi-ows/c036e3a3-8020-45eb-a243-8817d5475507/tasks/**)"
+      "Read(//c/Users/enliven/AppData/Local/Temp/claude/c--Users-enliven-Documents-GitHub-gnothi-ows/c036e3a3-8020-45eb-a243-8817d5475507/tasks/**)",
+      "WebFetch(domain:docs.openwallet.sh)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)",
+      "Bash(node -e \"import\\('@open-wallet-standard/core'\\).then\\(m => console.log\\(Object.keys\\(m\\)\\)\\).catch\\(e => console.error\\(e.message\\)\\)\")",
+      "Bash(npm search:*)",
+      "Bash(npm view:*)",
+      "Bash(npm list:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\enliven\\Documents\\GitHub\\gnothi-ows\\.claude\\cache\\agents",
