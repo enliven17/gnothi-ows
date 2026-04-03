@@ -85,6 +85,12 @@ export function getPrivateKey(): string {
   return getRequiredConfig('privateKey', 'PRIVATE_KEY');
 }
 
+export function getCallerPrivateKey(): string {
+  // CALLER_PRIVATE_KEY is the relay wallet with CALLER_ROLE on BridgeForwarder.
+  // Falls back to PRIVATE_KEY if not separately configured.
+  return process.env.CALLER_PRIVATE_KEY ?? getPrivateKey();
+}
+
 export function getBridgeSyncInterval(): string {
   return getRequiredConfig('bridgeSyncInterval', 'BRIDGE_SYNC_INTERVAL');
 }

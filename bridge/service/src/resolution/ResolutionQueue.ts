@@ -199,6 +199,9 @@ export class ResolutionQueue {
 
       console.log(`[Resolution] COMPLETED: ${job.marketTitle}`);
 
+      // Update OWS credential for market creator (fire-and-forget)
+      this.notifyOWSCredential(job.contractAddress, job.marketTitle).catch(() => {});
+
     } catch (error: any) {
       job.status = 'failed';
       job.errorMessage = error.message || String(error);
@@ -227,6 +230,46 @@ export class ResolutionQueue {
   /**
    * Generate unique job ID from contract address and date
    */
+  /**
+   * Notify the OWS credential endpoint after market resolution.
+   * Reads the market creator from the contract and updates their accuracy stats.
+   */
+  private async notifyOWSCredential(contractAddress: string, marketTitle: string): Promise<void> {
+    const frontendUrl = process.env.FRONTEND_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+    if (!frontendUrl) return;
+
+    try {
+      // Read creator from on-chain (best-effort — if it fails we skip)
+      const { ethers } = await import('ethers');
+      const rpc = process.env.BASE_SEPOLIA_RPC_URL;
+      if (!rpc) return;
+      const provider = new ethers.JsonRpcProvider(rpc);
+      const contract = new ethers.Contract(
+        contractAddress,
+        ['function creator() view returns (address)', 'function resolution() view returns (uint8)'],
+        provider,
+      );
+      const [creator, resolution] = await Promise.all([
+        contract.creator(),
+        contract.resolution().catch(() => 0),
+      ]);
+
+      await fetch(`${frontendUrl}/api/ows/credential`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: creator,
+          marketId: contractAddress,
+          won: Number(resolution) === 1, // 1 = SIDE_A wins (creator won if they bet A)
+          staked: '0', // staked amount tracked separately via contract events
+        }),
+      });
+      console.log(`[OWS] Credential updated for creator ${creator} — market ${marketTitle}`);
+    } catch (e: any) {
+      console.warn(`[OWS] Credential update failed: ${e?.message}`);
+    }
+  }
+
   private generateJobId(contractAddress: string, endDate: Date): string {
     const timestamp = endDate.getTime();
     const addressSuffix = contractAddress.slice(-8); // Last 8 chars of address

@@ -18,7 +18,8 @@ import {
   getGenlayerRpcUrl,
   getPrivateKey,
 } from "../config.js";
-import { createOWSSigningWallet } from "../ows/OWSVault.js";
+import { createOWSSigningWallet, OWS_RELAY_WALLET } from "../ows/OWSVault.js";
+import { getCallerPrivateKey } from "../config.js";
 
 interface BridgeMessage {
   targetChainId: number;
@@ -46,7 +47,7 @@ export class GenLayerToEvmRelay {
 
   constructor() {
     this.provider = new ethers.JsonRpcProvider(getForwarderNetworkRpcUrl());
-    this.wallet = createOWSSigningWallet(getPrivateKey(), this.provider);
+    this.wallet = createOWSSigningWallet(OWS_RELAY_WALLET, getCallerPrivateKey(), this.provider);
 
     this.bridgeForwarder = new ethers.Contract(
       getBridgeForwarderAddress(),

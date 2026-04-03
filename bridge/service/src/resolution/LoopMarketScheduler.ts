@@ -17,7 +17,7 @@ import { ethers, AbiCoder } from "ethers";
 import { getBaseSepoliaRpcUrl, getPrivateKey, getBetFactoryAddress } from "../config.js";
 import { AutoResolver } from "./AutoResolver.js";
 import type { ResolutionQueue } from "./ResolutionQueue.js";
-import { createOWSSigningWallet } from "../ows/OWSVault.js";
+import { createOWSSigningWallet, OWS_OWNER_WALLET } from "../ows/OWSVault.js";
 
 const LOOP_DURATION_SECONDS = 5 * 60; // 5 minutes
 const RESOLUTION_BUFFER_SECONDS = 15;  // wait a bit after deadline before calling resolve()
@@ -57,7 +57,7 @@ export class LoopMarketScheduler {
 
   constructor(resolutionQueue: ResolutionQueue) {
     this.provider = new ethers.JsonRpcProvider(getBaseSepoliaRpcUrl());
-    this.wallet = createOWSSigningWallet(getPrivateKey(), this.provider);
+    this.wallet = createOWSSigningWallet(OWS_OWNER_WALLET, getPrivateKey(), this.provider);
     this.factory = new ethers.Contract(getBetFactoryAddress(), BET_FACTORY_ABI, this.wallet);
     this.autoResolver = new AutoResolver();
     this.resolutionQueue = resolutionQueue;
