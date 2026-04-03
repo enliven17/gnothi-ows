@@ -1,226 +1,82 @@
-# The Commons — Group Coordination & Shared Capital
+# Multi-Agent Systems & Autonomous Economies (Track 4)
 
-Gnothi implements **Track 04: The Commons** from the XMTP hackathon — enabling group coordination and shared capital for prediction markets.
+Gnothi implements **Track 04: Multi-Agent Systems & Autonomous Economies** by building the trust, payment, and resolution layer for the agentic economy.
 
 ---
 
 ## Overview
 
-The Commons layer adds four interlocking features on top of the base prediction market protocol:
+The "Multi-Agent Systems" track focuses on environments where AI agents coordinate, trade, and compete. Gnothi provides the primary infrastructure for this ecosystem:
 
-| Feature | Technology | Purpose |
-|---------|------------|---------|
-| **Group Chat** | XMTP v3 browser-sdk | Per-market group conversations |
-| **MarketBot** | XMTP Agent (bridge service) | Automated notifications on key events |
-| **USDC Onramp** | MoonPay signed-URL widget | Buy real stablecoins without a CEX |
-| **Group Treasury** | GroupMarket.sol + OWS | Pool USDC and bet as a collective |
+| Feature | Category | Purpose |
+|---------|----------|---------|
+| **Prediction Market Agent Swarm** | 04.09 | 5 independent LLM agents (GenLayer) resolving real-world events. |
+| **Agent Identity & OWS Wallet** | 02.06 | Every agent holds an OWS-compatible wallet with reputation-gated credentials. |
+| **Cross-Chain AI Oracle** | 03.07 | Bridging GenLayer AI consensus results to Base Sepolia via LayerZero. |
+| **MarketBot Notification Agent** | 04.02 | AI agents notifying humans of market events and validator votes. |
+| **Autonomous Group Treasury** | 04.04 | Shared on-chain vaults (GroupMarket.sol) for collective pool betting. |
 
 ---
 
-## 1. XMTP Group Chat
+## 1. Prediction Market Agent Swarm
 
-Every prediction market gets a dedicated XMTP group conversation identified by `gnothi:market:<contractId>`.
+Gnothi's core innovation is delegating market resolution to a decentralized swarm of AI agents on GenLayer.
 
-### Architecture
-
-```
-User connects wallet
-    ↓
-useMarketChat hook (frontend/src/lib/xmtp/useMarketChat.ts)
-    ↓
-getXmtpClient() — creates/restores XMTP client from EOA signer
-    ↓
-getOrCreateMarketGroup() — finds or creates group named "gnothi:market:<id>"
-    ↓
-loadMarketMessages() — loads last 50 messages
-    ↓
-streamMarketMessages() — real-time async-iterable stream
-```
+### Consensus Mechanism: Optimistic Democracy
+- **5 Independent Nodes**: Each node runs a unique LLM prompt to scrape data and analyze evidence.
+- **Strict Equality Principle**: Consensus is only reached if all 5 agents agree on the outcome (SIDE_A, SIDE_B, or UNDETERMINED).
+- **Anti-Collusion**: Agents operate on the GenLayer testnet, isolated from the EVM trading layer until the result is bridged.
 
 ### Key Files
-
-| File | Purpose |
-|------|---------|
-| [frontend/src/lib/xmtp/client.ts](../../../lib/xmtp/client.ts) | XMTP client singleton per wallet |
-| [frontend/src/lib/xmtp/marketChat.ts](../../../lib/xmtp/marketChat.ts) | Group CRUD + message streaming |
-| [frontend/src/lib/xmtp/useMarketChat.ts](../../../lib/xmtp/useMarketChat.ts) | React hook wiring it all together |
-| [frontend/src/app/components/MarketChat/MarketChat.tsx](../../../app/components/MarketChat/MarketChat.tsx) | Chat UI component |
-
-### XMTP Signer Pattern
-
-Gnothi uses an **EOA signer** built from the user's wagmi wallet client:
-
-```typescript
-// Returns Uint8Array — required by XMTP v3
-signMessage: async (message: string): Promise<Uint8Array> => {
-  const sig = await walletClient.signMessage({ message });
-  const hex = sig.startsWith('0x') ? sig.slice(2) : sig;
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
-};
-```
-
-### Message Format
-
-Messages are plain text strings. The chat UI distinguishes own vs. others' messages using `senderInboxId === xmtpClient.inboxId`.
+- [bridge/intelligent-contracts/news_pm.py](../../../bridge/intelligent-contracts/news_pm.py): The Python logic running on the agent swarm.
+- [bridge/service/src/relay/EvmToGenLayer.ts](../../../bridge/service/src/relay/EvmToGenLayer.ts): The trigger that spawns the swarm.
 
 ---
 
-## 2. MarketBot — XMTP Notification Agent
+## 2. Agent Identity & OWS Wallet
 
-The bridge service runs an XMTP bot (`XMTP_BOT_PRIVATE_KEY`) that posts automated messages into every market group chat.
+Every participant in the Gnothi ecosystem—whether human or agent—is identified by an **Open Wallet Standard (OWS)** compatible address.
 
-### Events Notified
+### OWS Wallet Integration
+- **Agent Treasury**: A central agent wallet (pre-seeded in `src/app/api/ows/wallet/route.ts`) handles platform fees and payouts.
+- **Reputation Credentials**: The system issues `MarketCredential` objects based on an agent's prediction accuracy and history.
 
-| Event | Trigger | Message |
-|-------|---------|---------|
-| Market Created | `BetCreated` on-chain | "🚀 New market: `<title>`…" |
-| Bet Placed | `BetPlaced` on-chain | "📊 New bet on `<market>`…" |
-| Resolution Started | Oracle deployed to GenLayer | "⏳ AI validators are resolving…" |
-| Validator Vote | GenLayer `ValidatorVoted` | "🤖 Validator `<N>` voted…" |
-| Market Resolved | Bridge relay confirms | "✅ Market resolved: `<outcome>`…" |
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| [bridge/service/src/xmtp/marketBot.ts](../../../bridge/service/src/xmtp/marketBot.ts) | Bot notification functions |
-| [bridge/service/src/relay/EvmToGenLayer.ts](../../../bridge/service/src/relay/EvmToGenLayer.ts) | Calls `notifyResolutionStarted` |
-| [bridge/service/src/relay/GenLayerToEvm.ts](../../../bridge/service/src/relay/GenLayerToEvm.ts) | Calls `notifyResolved` |
-
-### Configuration
-
-```env
-# bridge/service/.env
-XMTP_BOT_PRIVATE_KEY=0x...   # Separate EOA for the bot
-```
+| Route | Function |
+|-------|----------|
+| `GET /api/ows/wallet` | Lists all agents active in the system. |
+| `GET /api/ows/credential` | Returns ZK-compatible identity and accuracy metrics for an agent. |
 
 ---
 
-## 3. MoonPay USDC Onramp
+## 3. Cross-Chain AI Oracle
 
-Users can buy USDC directly in the app without leaving to a CEX.
+To enable autonomous economies on fast liquid chains like Base, Gnothi bridges AI compute from GenLayer.
 
-### Flow
-
-```
-User clicks "Buy USDC"
-    ↓
-frontend/src/lib/moonpay/onramp.ts
-    ↓
-GET /api/moonpay/sign?url=<unsigned_moonpay_url>
-    ↓ (server-side HMAC-SHA256 with MOONPAY_SECRET_KEY)
-Returns signed URL
-    ↓
-window.open(signedUrl) — MoonPay popup/tab
-```
-
-### API Routes
-
-| Route | Purpose |
-|-------|---------|
-| `GET /api/moonpay/sign` | Signs a MoonPay URL server-side (prevents key exposure) |
-| `POST /api/moonpay/webhook` | Receives purchase completion events from MoonPay |
-
-### Environment Variables
-
-```env
-# frontend/.env.local
-NEXT_PUBLIC_MOONPAY_API_KEY=pk_test_...   # Public key (safe to expose)
-MOONPAY_SECRET_KEY=sk_test_...            # Secret key (server-side only)
-MOONPAY_WEBHOOK_KEY=wk_test_...          # Webhook verification key
-```
-
-### Entry Points
-
-The "Buy USDC" button appears:
-- **Header** — inside the wallet balance dropdown
-- **Market Chat** — below the chat input when wallet is connected
+- **LayerZero V2**: Acts as the secure transport layer.
+- **BridgeForwarder**: Ensures that only authorized GenLayer consensus results can resolve markets on Base Sepolia.
+- **Pay-Per-Call**: The `resolve()` function can be extended to include micropayments for the AI compute time used by the agents.
 
 ---
 
-## 4. Group Treasury (GroupMarket.sol)
+## 4. Agent Communication (XMTP)
 
-Multiple users can pool USDC into a shared on-chain vault and place bets collectively.
+Autonomous economies require communication between agents and human stakeholders.
 
-### Contract: `GroupMarket.sol`
-
-Deployed at: `0x4E53468cF5FF43bd2bD2D7ECa657839566299724` (Base Sepolia)
-
-```solidity
-// Core functions
-function deposit(uint256 amount) external          // Deposit USDC into the pool
-function executeBet(address market, uint8 side,    // Pool places a bet
-                    uint64 confidence) external
-function receivePayout(address market) external    // Claim winnings into pool
-function claimShare() external                     // Each member withdraws their share
-function disband() external                        // Emergency: refund all members
-```
-
-### Proportional Payouts
-
-Each member's share is proportional to their deposit:
-
-```
-userShare = totalPool × (userDeposit / totalDeposited)
-```
-
-### UI Component
-
-The `GroupMarketPanel` appears on every market page (requires `NEXT_PUBLIC_GROUP_MARKET_ADDRESS`):
-
-- Shows pool balance and member count
-- Deposit form (USDC approve + deposit)
-- Execute Bet button (owner only)
-- Claim Share button (after resolution)
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| [contracts/contracts/GroupMarket.sol](../../../contracts/GroupMarket.sol) | Shared treasury contract |
-| [frontend/src/app/components/GroupMarket/GroupMarketPanel.tsx](../../../app/components/GroupMarket/GroupMarketPanel.tsx) | Group treasury UI |
+### MarketBot Agent
+An autonomous XMTP bot monitors the blockchain and notifies users in real-time:
+- **Validator Voted**: Notifies when a specific AI agent has cast its vote on GenLayer.
+- **Consensus Reached**: Announces the final verdict before it even hits the EVM.
+- **Trading Alerts**: Informs users of high-volume markets or expiring bets.
 
 ---
 
-## 5. OWS Wallet API
+## 5. Autonomous Group Treasury
 
-The app exposes an Open Wallet Standard-compatible API for agent skill integration.
+The `GroupMarket.sol` contract enables multi-agent coordination for shared capital.
 
-### Routes
-
-| Route | Purpose |
-|-------|---------|
-| `GET /api/ows/wallet` | List registered agent wallets |
-| `POST /api/ows/wallet` | Create/retrieve an agent wallet |
-| `GET /api/ows/credential?address=0x...` | Get prediction reputation credential |
-| `POST /api/ows/credential` | Issue/update credential after resolution |
-
-### Credential Schema
-
-```typescript
-interface MarketCredential {
-  walletAddress: string;
-  totalMarkets: number;
-  correctPredictions: number;
-  accuracyRate: number;   // 0–100
-  totalStaked: string;    // USDC amount
-  issuedAt: number;       // Unix ms
-}
-```
-
----
-
-## Deployed Addresses (Base Sepolia)
-
-| Contract | Address |
-|----------|---------|
-| BetFactoryCOFI | `0xC2F959930D13d2796ceFaE4203E376c53f79fB98` |
-| GroupMarket | `0x4E53468cF5FF43bd2bD2D7ECa657839566299724` |
-| USDC (real) | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
+- **Pool Voting**: Agents or humans can deposit USDC into a shared vault.
+- **Collective Betting**: The vault executes bets on prediction markets, distributing winnings proportionally to depositors.
+- **Hierarchical Governance**: Future iterations will allow agents to manage these treasuries autonomously based on OWS policies.
 
 ---
 
@@ -228,9 +84,9 @@ interface MarketCredential {
 
 | Requirement | Status | Implementation |
 |-------------|--------|----------------|
-| XMTP group messaging | ✅ | Per-market group chats |
-| Multi-user coordination | ✅ | GroupMarket.sol treasury |
-| Real stablecoins | ✅ | Base Sepolia USDC |
-| OWS CLI / agent skill | ✅ | `/api/ows/*` routes |
-| MoonPay agent skill | ✅ | Signed URL + webhook |
-| MarketBot notifications | ✅ | Bridge service XMTP bot |
+| Agent swarm coordination | ✅ | GenLayer 5-agent consensus |
+| Agent identity (OWS) | ✅ | `/api/ows/*` credential routes |
+| Autonomous treasury | ✅ | GroupMarket.sol shared pools |
+| Agent-to-human messaging | ✅ | XMTP MarketBot notifications |
+| Cross-chain data oracle | ✅ | GenLayer ↔ Base Bridge |
+| Pay-per-call services | ✅ | Prediction resolution via AI consensus |

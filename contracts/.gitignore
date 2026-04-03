@@ -1,1 +1,11 @@
+artifacts/
+artifacts-zk/
+cache/
+cache-zk/
+deployments/
+deployments-zk/
+typechain-types/
+typechain/
+node_modules/
+.env
 wallet.txt

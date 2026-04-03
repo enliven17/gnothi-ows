@@ -69,29 +69,29 @@ const BotIcon = () => (
     </svg>
 );
 
-const COMMONS_FEATURES = [
+const AGENTIC_FEATURES = [
     {
-        icon: XmtpIcon,
-        label: 'Group Chat',
-        subtitle: 'Per-market XMTP group conversations for traders to coordinate in real time.',
-        source: 'XMTP v3',
+        icon: BotIcon,
+        label: 'Agent Swarm',
+        subtitle: '5 independent LLM agents resolving real-world events via consensus.',
+        source: 'GenLayer',
+    },
+    {
+        icon: TreasuryIcon, // Reusing Treasury for OWS/Reputation
+        label: 'Agent Identity',
+        subtitle: 'Reputation-gated agent wallets via the Open Wallet Standard (OWS).',
+        source: 'OWS API',
     },
     {
         icon: TreasuryIcon,
-        label: 'Group Treasury',
+        label: 'Autonomous Treasury',
         subtitle: 'Pool USDC into a shared vault and bet as a collective via GroupMarket.sol.',
         source: 'On-chain',
     },
     {
-        icon: MoonpayIcon,
-        label: 'USDC Onramp',
-        subtitle: 'Buy USDC with a credit card directly in the app — no CEX required.',
-        source: 'MoonPay',
-    },
-    {
-        icon: BotIcon,
-        label: 'MarketBot',
-        subtitle: 'AI-powered bot posts resolution updates and bet notifications into group chats.',
+        icon: XmtpIcon,
+        label: 'AI Messaging',
+        subtitle: 'MarketBot notifies stakeholders of validator votes and final verdicts.',
         source: 'XMTP Agent',
     },
 ];
@@ -200,17 +200,17 @@ const LandingView: React.FC = () => {
                 >
                     <div className={styles.sectionHeader}>
                         <motion.p className={styles.sectionLabel} variants={fadeUp} custom={0}>
-                            The Commons
+                            Agentic Economies
                         </motion.p>
                         <motion.h2 className={styles.sectionTitle} variants={fadeUp} custom={0}>
-                            Group coordination & shared capital
+                            Autonomous Multi-Agent Systems
                         </motion.h2>
                         <motion.p className={styles.heroSub} style={{ marginTop: '8px', textAlign: 'center' }} variants={fadeUp} custom={1}>
-                            Trade together. Chat together. Pool capital and bet as a collective.
+                            Identity, coordination, and automated resolution for the agent-driven economy.
                         </motion.p>
                     </div>
                     <div className={styles.typeGrid4}>
-                        {COMMONS_FEATURES.map((f, i) => (
+                        {AGENTIC_FEATURES.map((f, i) => (
                             <motion.div
                                 key={f.label}
                                 className={styles.typeCard}

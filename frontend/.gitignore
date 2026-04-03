@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+artifacts/
+artifacts-zk/
+cache/
+cache-zk/
 
 # debug
 npm-debug.log*

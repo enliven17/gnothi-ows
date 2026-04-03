@@ -21,6 +21,10 @@ Thumbs.db
 # Build files
 dist/
 build/
+artifacts/
+artifacts-zk/
+cache/
+cache-zk/
 
 # Debug logs
 debug/
