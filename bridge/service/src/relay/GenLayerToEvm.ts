@@ -18,6 +18,7 @@ import {
   getGenlayerRpcUrl,
   getPrivateKey,
 } from "../config.js";
+import { createOWSSigningWallet } from "../ows/OWSVault.js";
 
 interface BridgeMessage {
   targetChainId: number;
@@ -36,7 +37,7 @@ const BRIDGE_FORWARDER_ABI = [
 
 export class GenLayerToEvmRelay {
   private provider: ethers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
+  private wallet: ethers.Signer;
   private bridgeForwarder: ethers.Contract;
   private genLayerClient: any;
   private usedHashes: Set<string>;
@@ -45,7 +46,7 @@ export class GenLayerToEvmRelay {
 
   constructor() {
     this.provider = new ethers.JsonRpcProvider(getForwarderNetworkRpcUrl());
-    this.wallet = new ethers.Wallet(getPrivateKey(), this.provider);
+    this.wallet = createOWSSigningWallet(getPrivateKey(), this.provider);
 
     this.bridgeForwarder = new ethers.Contract(
       getBridgeForwarderAddress(),
@@ -99,9 +100,10 @@ export class GenLayerToEvmRelay {
 
     try {
       const callerRole = await this.bridgeForwarder.CALLER_ROLE();
-      const hasCallerRole = await this.bridgeForwarder.hasRole(callerRole, this.wallet.address);
+      const walletAddr = await this.wallet.getAddress();
+      const hasCallerRole = await this.bridgeForwarder.hasRole(callerRole, walletAddr);
       if (!hasCallerRole) {
-        console.error(`[GL->EVM] FATAL: Relay wallet ${this.wallet.address} does not have CALLER_ROLE on ${forwarderAddress}`);
+        console.error(`[GL->EVM] FATAL: Relay wallet ${walletAddr} does not have CALLER_ROLE on ${forwarderAddress}`);
         console.error("          Grant CALLER_ROLE with bridge/smart-contracts/scripts/set-caller.ts or switch PRIVATE_KEY to the authorized relay wallet.");
         return false;
       }

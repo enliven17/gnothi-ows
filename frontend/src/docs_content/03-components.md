@@ -872,16 +872,102 @@ NEXT_PUBLIC_PRIVY_APP_ID=...
 ```bash
 # Core
 PRIVATE_KEY=0x...
+CALLER_PRIVATE_KEY=0x...          # Relay wallet — imported into OWS vault on startup
 BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
 BET_FACTORY_ADDRESS=0x...
 GENLAYER_RPC_URL=https://rpc.genlayer.net
 BRIDGE_SENDER_ADDRESS=0x...
 
-# Optional
+# OWS (optional — defaults to ~/.ows-vault)
+OWS_VAULT_PATH=/data/.ows-vault   # Set to a persistent volume path on Railway
+
+# Supabase — enables OWS credential persistence
 SUPABASE_URL=https://...
 SUPABASE_SERVICE_KEY=...
 HTTP_PORT=3001
 ```
+
+---
+
+## OWS — Open Wallet Standard
+
+### Overview
+
+Gnothi uses [Open Wallet Standard v1.2](https://openwallet.sh) for:
+
+- **Encrypted key custody** — relay private keys stored in an OWS vault, never as plaintext at runtime
+- **Policy-gated signing** — a chain-allowlist policy (zkSync Sepolia + Base Sepolia only) gates every TX before decryption
+- **Reputation credentials** — prediction accuracy tracked per wallet in `ows_credentials` (Supabase)
+
+### Architecture
+
+```
+Bridge Relay Agent
+       │
+       │  createOWSSigningWallet() → OWSEthersWallet
+       ▼
+┌─────────────────────┐
+│    OWS Access Layer  │
+│  Chain Allowlist     │  eip155:300, eip155:84532
+│  Policy Engine       │  (pre-signing validation)
+│  Signing Core        │  key decrypt → sign → key wipe
+│  Wallet Vault        │  ~/.ows-vault/ (AES encrypted)
+└─────────────────────┘
+       │
+       ▼
+   TX broadcast (ethers provider)
+```
+
+### OWSEthersWallet
+
+`src/ows/OWSVault.ts` exports `OWSEthersWallet` — an `ethers.AbstractSigner` backed by OWS:
+
+```typescript
+import { createOWSSigningWallet } from '../ows/OWSVault.js';
+
+// Drop-in for new ethers.Wallet(key, provider)
+this.wallet = createOWSSigningWallet(getPrivateKey(), this.provider);
+```
+
+On Linux/Railway: OWS native bindings handle signing.  
+On Windows (dev): transparently falls back to `ethers.Wallet`.
+
+### OWSWalletPanel (Frontend)
+
+`src/app/components/OWSWallet/OWSWalletPanel.tsx` — shown on market detail pages when wallet is connected:
+
+- Displays wallet address with OWS badge
+- Fetches prediction credential from `/api/ows/credential` (Supabase-backed)
+- Shows Markets played, Accuracy %, Total staked USDC
+- MoonPay onramp button
+
+The header also shows a live OWS badge (`● OWS 87%`) with credential stats on hover.
+
+### Credential Schema (Supabase)
+
+Run once to enable credential persistence:
+
+```sql
+CREATE TABLE IF NOT EXISTS ows_credentials (
+  wallet_address      TEXT PRIMARY KEY,
+  total_markets       INT NOT NULL DEFAULT 0,
+  correct_predictions INT NOT NULL DEFAULT 0,
+  accuracy_rate       FLOAT NOT NULL DEFAULT 0,
+  total_staked        TEXT NOT NULL DEFAULT '0',
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+Credentials are updated by the bridge service after each market resolution via `POST /api/ows/credential`.
+
+### API Routes
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/ows/wallet` | GET | List wallets from OWS vault |
+| `/api/ows/wallet` | POST | Create or import wallet into vault |
+| `/api/ows/credential` | GET | Get prediction credential for `?address=` |
+| `/api/ows/credential` | POST | Update credential after resolution |
 
 ---
 

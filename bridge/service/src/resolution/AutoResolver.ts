@@ -8,6 +8,7 @@
 
 import { ethers } from "ethers";
 import { getBaseSepoliaRpcUrl, getPrivateKey } from "../config.js";
+import { createOWSSigningWallet } from "../ows/OWSVault.js";
 
 // Minimal ABI for BetCOFI.resolve() function
 const BET_COFI_ABI = [
@@ -78,13 +79,14 @@ enum BetStatus {
 
 export class AutoResolver {
   private provider: ethers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
+  private wallet: ethers.Signer;
   private walletAddress: string;
 
   constructor() {
     this.provider = new ethers.JsonRpcProvider(getBaseSepoliaRpcUrl());
-    this.wallet = new ethers.Wallet(getPrivateKey(), this.provider);
-    this.walletAddress = this.wallet.address;
+    this.wallet = createOWSSigningWallet(getPrivateKey(), this.provider);
+    // address resolved async; walletAddress set synchronously via fallback
+    this.walletAddress = (this.wallet as any).address ?? '';
 
   }
 

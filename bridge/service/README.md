@@ -7,11 +7,37 @@ This service handles two jobs:
 
 It also exposes an HTTP API for scheduled resolutions and AI console metadata.
 
+## OWS Integration
+
+The bridge service uses **Open Wallet Standard** (`@open-wallet-standard/core`) for all relay transaction signing on Railway/Linux.
+
+### How it works
+
+On startup the service:
+1. Imports `CALLER_PRIVATE_KEY` into an encrypted OWS vault (`~/.ows-vault/` by default)
+2. Registers a chain-allowlist policy: only `eip155:300` (zkSync Sepolia) and `eip155:84532` (Base Sepolia) are permitted
+3. Creates an `OWSEthersWallet` signer — a drop-in `ethers.AbstractSigner` backed by OWS
+
+Every relay and resolution transaction is then signed via OWS:
+- Key is decrypted only during signing
+- Key material is wiped from memory after use
+- Private key is never exposed as a raw value at runtime
+
+On Windows (local dev) the native binding is unavailable; the signer transparently falls back to `ethers.Wallet`. No code changes are needed.
+
+### Files
+
+| File | Role |
+|------|------|
+| `src/ows/OWSVault.ts` | Vault lifecycle, policy registration, `OWSEthersWallet`, `createOWSSigningWallet()` |
+| `src/index.ts` | Calls `initOWSVault()` on startup before relay classes are created |
+
 ## Required Environment
 
 Core:
 
 - `PRIVATE_KEY`: wallet used for scheduled `resolve()` calls and GenLayer deployment
+- `CALLER_PRIVATE_KEY`: relay wallet with `CALLER_ROLE` on `BridgeForwarder` — imported into OWS vault on startup
 - `BASE_SEPOLIA_RPC_URL`: Base Sepolia RPC endpoint
 - `BET_FACTORY_ADDRESS`: deployed `BetFactoryCOFI` address
 - `GENLAYER_RPC_URL`: GenLayer RPC endpoint
@@ -28,6 +54,7 @@ HTTP API:
 
 Optional:
 
+- `OWS_VAULT_PATH`: override OWS vault directory (default: `~/.ows-vault`)
 - `BRIDGE_SYNC_INTERVAL`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_KEY`

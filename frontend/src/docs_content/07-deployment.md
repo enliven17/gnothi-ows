@@ -122,6 +122,7 @@ Create `bridge/service/.env`:
 ```bash
 # Core Configuration
 PRIVATE_KEY=0xyour_private_key_here
+CALLER_PRIVATE_KEY=0xyour_relay_wallet_key   # Must have CALLER_ROLE on BridgeForwarder
 BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
 BET_FACTORY_ADDRESS=0x1234...5678
 GENLAYER_RPC_URL=https://rpc.genlayer.net
@@ -134,12 +135,40 @@ FORWARDER_NETWORK_RPC_URL=https://forwarder.genlayer.net
 # HTTP API
 HTTP_PORT=3001
 
-# Optional: Supabase for persistence
+# OWS Vault (optional — Railway: set to a mounted volume path)
+# OWS_VAULT_PATH=/data/.ows-vault
+
+# Supabase — required for OWS credential persistence
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_KEY=your_supabase_service_key
 
 # Optional: Oracle path override
 ORACLES_PATH=./intelligent-oracles
+```
+
+### Step 1b: Grant CALLER_ROLE to Relay Wallet
+
+If you are using a separate `CALLER_PRIVATE_KEY` (recommended), grant it `CALLER_ROLE` on the BridgeForwarder:
+
+```bash
+cd bridge/smart-contracts
+NEW_CALLER=0xyour_relay_wallet_address \
+  npx hardhat run scripts/set-caller.ts --network zkSyncSepoliaTestnet
+```
+
+### Step 1c: Create OWS Credentials Table (Supabase)
+
+Run in the Supabase SQL editor to enable reputation credential persistence:
+
+```sql
+CREATE TABLE IF NOT EXISTS ows_credentials (
+  wallet_address      TEXT PRIMARY KEY,
+  total_markets       INT NOT NULL DEFAULT 0,
+  correct_predictions INT NOT NULL DEFAULT 0,
+  accuracy_rate       FLOAT NOT NULL DEFAULT 0,
+  total_staked        TEXT NOT NULL DEFAULT '0',
+  updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 ```
 
 ### Step 2: Build Bridge Service
@@ -157,14 +186,23 @@ npm run dev
 
 **Expected Output**:
 ```
-[EVM→GL] Starting event polling (every 5s)...
-[EVM→GL] Factory: 0x1234...5678
-[EVM→GL] RPC: https://sepolia.base.org
-[EVM→GL] GenLayer: https://rpc.genlayer.net
-[EVM→GL] Polling for ResolutionRequested events
+Starting Bridge Service
 
-API listening on port 3001
+[OWS] Vault: relay-wallet imported — EVM 0x83CC...1646
+[OWS] Policy: relay-chain-allowlist registered (chains: eip155:300, eip155:84532)
+[OWS] Vault initialized — native SDK active
+[OWS] Signing wallet created — OWS-backed (0x83CC...1646)
+
+[GL→EVM] Initializing...
+[EVM→GL] Starting event polling (every 5s)...
+[RESOLUTION] HTTP API listening on port 3001
 ```
+
+On Windows (local dev), OWS native is unavailable — you will see:
+```
+[OWS] Native bindings unavailable (Windows dev mode) — ethers.js fallback active
+```
+This is expected. All signing continues via `ethers.Wallet`.
 
 ### Step 4: Verify Bridge Service
 

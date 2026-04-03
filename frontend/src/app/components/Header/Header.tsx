@@ -12,6 +12,7 @@ import InfoIcon from '../Shared/InfoIcon';
 import Tooltip from '../Shared/Tooltip';
 import { USDL_ADDRESS, MOCK_USDL_ABI, USDL_MULTIPLIER } from '../../../lib/constants';
 import { openMoonPayOnramp, isMoonPayConfigured } from '../../../lib/moonpay/onramp';
+import { getMarketCredential, type MarketCredential, formatAccuracy } from '../../../lib/ows/client';
 
 interface HeaderProps {
     onNavigate: (page: 'landing' | 'markets' | 'docs') => void;
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
     const [walletDropdownOpen, setWalletDropdownOpen] = React.useState(false);
     const [balanceDropdownOpen, setBalanceDropdownOpen] = React.useState(false);
     const [scrolled, setScrolled] = React.useState(false);
+    const [owsCredential, setOwsCredential] = React.useState<MarketCredential | null>(null);
     const walletRef = React.useRef<HTMLDivElement>(null);
     const balanceRef = React.useRef<HTMLDivElement>(null);
 
@@ -64,6 +66,12 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
     React.useEffect(() => {
         fetchUsdlBalance();
     }, [fetchUsdlBalance]);
+
+    // Fetch OWS credential when wallet connects
+    React.useEffect(() => {
+        if (!walletAddress) { setOwsCredential(null); return; }
+        getMarketCredential(walletAddress).then(setOwsCredential);
+    }, [walletAddress]);
 
     // Memoized handlers to prevent re-render loops
     const handleBalanceClick = React.useCallback(() => {
@@ -152,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                             onClick={handleBalanceClick}
                         >
                             {(Number(usdlBalance) / USDL_MULTIPLIER).toFixed(2)} USDC
-                            <Tooltip content="USDC on Base Sepolia">
+                            <Tooltip position="bottom" content="USDC on Base Sepolia">
                                 <div style={{ marginLeft: '6px', color: 'var(--text-muted)', display: 'flex' }}>
                                     <InfoIcon size={12} />
                                 </div>
@@ -219,6 +227,34 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                             </div>
                         )}
                     </div>
+                )}
+                {isConnected && (
+                    <Tooltip 
+                        position="bottom"
+                        content={
+                        owsCredential && owsCredential.totalMarkets > 0
+                            ? `${owsCredential.totalMarkets} markets · ${formatAccuracy(owsCredential.accuracyRate)} · $${owsCredential.totalStaked} staked`
+                            : 'Open Wallet Standard — reputation-gated identity'
+                    } >
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '5px 9px',
+                            borderRadius: '6px',
+                            border: '1px solid #10b98133',
+                            backgroundColor: '#10b9810d',
+                            cursor: 'default',
+                        }}>
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }} />
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: '#10b981', letterSpacing: '0.05em' }}>OWS</span>
+                            {owsCredential && owsCredential.totalMarkets > 0 && (
+                                <span style={{ fontSize: '11px', color: '#10b981', opacity: 0.8 }}>
+                                    {owsCredential.accuracyRate.toFixed(0)}%
+                                </span>
+                            )}
+                        </div>
+                    </Tooltip>
                 )}
                 {isConnected ? (
                     <div ref={walletRef} style={{ position: 'relative' }}>
