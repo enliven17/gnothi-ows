@@ -112,30 +112,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
                     <Image src="/gnothi.svg" alt="Logo" width={30} height={30} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <h1 style={{ fontSize: '26px', fontWeight: '800', letterSpacing: '-0.5px', margin: 0 }}>gnothi</h1>
-                        <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '400' }}>
-                            Powered by{' '}
-                            <a
-                                href="https://genlayer.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    color: '#6b7280',
-                                    textDecoration: 'none',
-                                    fontWeight: '500'
-                                }}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.color = '#374151';
-                                    e.currentTarget.style.textDecoration = 'underline';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.color = '#6b7280';
-                                    e.currentTarget.style.textDecoration = 'none';
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                GenLayer
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>

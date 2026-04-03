@@ -5,16 +5,16 @@ import { motion } from 'framer-motion';
 import styles from './ArchitectureDiagram.module.css';
 
 const FLOW_STEPS = [
-    { id: '01', title: 'User / Dapp', desc: 'Market creation on Base Sepolia.', color: '#FF8F8F', x: 0, y: 0 },
-    { id: '02', title: 'Bet Factory', desc: 'Deployed SCEM market contracts.', color: '#FF7F50', x: 1, y: 0 },
+    { id: '01', title: 'Agent Creator', desc: 'Market creation on Base Sepolia.', color: '#FF8F8F', x: 0, y: 0 },
+    { id: '02', title: 'OWS Identity', desc: 'Reputation-gated agent wallets.', color: '#FF7F50', x: 1, y: 0 },
     { id: '03', title: 'Bridge Serv.', desc: 'Polling resolution events.', color: '#FFD700', x: 2, y: 0 },
-    { id: '04', title: 'AI Oracle', desc: 'GenLayer Bradbury instance.', color: '#9ACD32', x: 2, y: 1 },
+    { id: '04', title: 'AI Swarm', desc: '5 LLM agents spawned on GenLayer.', color: '#9ACD32', x: 2, y: 1 },
     { id: '05', title: 'Web Harvest', desc: 'Fetching real-world evidence.', color: '#48D1CC', x: 1, y: 1 },
-    { id: '06', title: 'Consensus', desc: 'Multi-LLM agreement on truth.', color: '#4682B4', x: 0, y: 1 },
+    { id: '06', title: 'AI Consensus', desc: 'Multi-LLM agreement on outcome.', color: '#4682B4', x: 0, y: 1 },
     { id: '07', title: 'LZ Bridging', desc: 'Cross-chain message relay.', color: '#6A5ACD', x: 0, y: 2 },
-    { id: '08', title: 'Finalization', desc: 'Result verified back on Base.', color: '#BA55D3', x: 1, y: 2 },
-    { id: '09', title: 'SCEM Score', desc: 'Entropy-based payout weights.', color: '#FF69B4', x: 2, y: 2 },
-    { id: '10', title: 'Settlement', desc: 'USDC Payouts to winners.', color: '#FF4500', x: 2, y: 3 },
+    { id: '08', title: 'Verified Res', desc: 'Validated on-chain by forwarder.', color: '#BA55D3', x: 1, y: 2 },
+    { id: '09', title: 'SCEM Payout', desc: 'Entropy-based reward weights.', color: '#FF69B4', x: 2, y: 2 },
+    { id: '10', title: 'Settlement', desc: 'Automated treasury payouts.', color: '#FF4500', x: 2, y: 3 },
 ];
 
 const PathAnimation = ({ d }: { d: string }) => {
@@ -44,10 +44,10 @@ const ArchitectureDiagram: React.FC = () => {
             </div>
 
             <div className={styles.header}>
-                <p className={styles.label}>Detailed Integration</p>
-                <h2 className={styles.title}>The Gnothi Engine</h2>
+                <p className={styles.label}>Agentic Workflow</p>
+                <h2 className={styles.title}>How the Swarm Works</h2>
                 <p className={styles.subtitle}>
-                    A decentralized workflow bridging Base trading with AI-powered GenLayer resolution.
+                    A decentralized multi-agent system bridging liquidity with autonomous resolution.
                 </p>
             </div>
 

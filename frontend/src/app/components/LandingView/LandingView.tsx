@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import styles from './LandingView.module.css';
 import ArchitectureDiagram from './ArchitectureDiagram';
+import AgenticEconomyCarousel from './AgenticEconomyCarousel';
 
 const fadeUp = {
     hidden: { opacity: 0, y: 24 },
@@ -69,32 +70,7 @@ const BotIcon = () => (
     </svg>
 );
 
-const AGENTIC_FEATURES = [
-    {
-        icon: BotIcon,
-        label: 'Agent Swarm',
-        subtitle: '5 independent LLM agents resolving real-world events via consensus.',
-        source: 'GenLayer',
-    },
-    {
-        icon: TreasuryIcon, // Reusing Treasury for OWS/Reputation
-        label: 'Agent Identity',
-        subtitle: 'Reputation-gated agent wallets via the Open Wallet Standard (OWS).',
-        source: 'OWS API',
-    },
-    {
-        icon: TreasuryIcon,
-        label: 'Autonomous Treasury',
-        subtitle: 'Pool USDC into a shared vault and bet as a collective via GroupMarket.sol.',
-        source: 'On-chain',
-    },
-    {
-        icon: XmtpIcon,
-        label: 'AI Messaging',
-        subtitle: 'MarketBot notifies stakeholders of validator votes and final verdicts.',
-        source: 'XMTP Agent',
-    },
-];
+
 
 const LandingView: React.FC = () => {
     const router = useRouter();
@@ -148,6 +124,9 @@ const LandingView: React.FC = () => {
                 </motion.div>
             </section>
 
+            {/* ── Autonomous Multi-Agent Systems (Agentic Economy Slider) ── */}
+            <AgenticEconomyCarousel />
+
             {/* ── Architecture Flow (Detailed How it Works) ── */}
             <ArchitectureDiagram />
 
@@ -182,47 +161,6 @@ const LandingView: React.FC = () => {
                                 <h3 className={styles.typeTitle}>{t.label}</h3>
                                 <p className={styles.typeSubtitle}>{t.subtitle}</p>
                                 <span className={styles.typeSourcePill}>{t.source}</span>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-            </section>
-
-            {/* ── The Commons: Group Coordination Layer ── */}
-            <section className={styles.types}>
-                <motion.div
-                    className={styles.typesInner}
-                    style={{ maxWidth: '1200px' }}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: '-80px' }}
-                    variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-                >
-                    <div className={styles.sectionHeader}>
-                        <motion.p className={styles.sectionLabel} variants={fadeUp} custom={0}>
-                            Agentic Economies
-                        </motion.p>
-                        <motion.h2 className={styles.sectionTitle} variants={fadeUp} custom={0}>
-                            Autonomous Multi-Agent Systems
-                        </motion.h2>
-                        <motion.p className={styles.heroSub} style={{ marginTop: '8px', textAlign: 'center' }} variants={fadeUp} custom={1}>
-                            Identity, coordination, and automated resolution for the agent-driven economy.
-                        </motion.p>
-                    </div>
-                    <div className={styles.typeGrid4}>
-                        {AGENTIC_FEATURES.map((f, i) => (
-                            <motion.div
-                                key={f.label}
-                                className={styles.typeCard}
-                                variants={fadeUp}
-                                custom={i + 1}
-                            >
-                                <div className={styles.typeIconArea}>
-                                    <f.icon />
-                                </div>
-                                <h3 className={styles.typeTitle}>{f.label}</h3>
-                                <p className={styles.typeSubtitle}>{f.subtitle}</p>
-                                <span className={styles.typeSourcePill}>{f.source}</span>
                             </motion.div>
                         ))}
                     </div>
